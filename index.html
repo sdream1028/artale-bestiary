@@ -1289,46 +1289,68 @@ function buildActivityEditors(){
   const pe = document.getElementById('prizeEditors');
   pe.innerHTML = '';
   activityData.prizes.forEach((p,i)=>{
-    pe.innerHTML += `
-      <div class="prize-editor">
-        <div class="prize-editor-row">
-          <span class="pe-label">${p.medal} 名次</span>
-          <input class="fi" style="flex:1;padding:5px 8px;font-size:11px" value="${p.rank}" oninput="activityData.prizes[${i}].rank=this.value"/>
-        </div>
-        <div class="prize-editor-row">
-          <span class="pe-label">獎品</span>
-          <textarea class="fi" rows="2" style="flex:1;padding:5px 8px;font-size:11px;resize:vertical" oninput="activityData.prizes[${i}].items=this.value">${p.items}</textarea>
-        </div>
+    const div = document.createElement('div');
+    div.className = 'prize-editor';
+    div.innerHTML = `
+      <div class="prize-editor-row">
+        <span class="pe-label">${p.medal} 名次</span>
+        <input class="fi prize-rank-input" data-i="${i}" style="flex:1;padding:5px 8px;font-size:11px" value="${p.rank}"/>
+      </div>
+      <div class="prize-editor-row">
+        <span class="pe-label">獎品</span>
+        <textarea class="fi prize-items-input" data-i="${i}" rows="2" style="flex:1;padding:5px 8px;font-size:11px;resize:vertical">${p.items}</textarea>
       </div>`;
+    pe.appendChild(div);
   });
+
   // 計分編輯器
   const se = document.getElementById('scoreEditors');
   se.innerHTML = '';
   activityData.scores.forEach((s,i)=>{
-    se.innerHTML += `
-      <div class="prize-editor" style="margin-bottom:8px">
-        <div class="prize-editor-row">
-          <span class="pe-label" style="width:36px">名稱</span>
-          <input class="fi" style="flex:1;padding:5px 8px;font-size:11px" value="${s.label}" oninput="activityData.scores[${i}].label=this.value"/>
-        </div>
-        <div class="prize-editor-row">
-          <span class="pe-label" style="width:36px">說明</span>
-          <input class="fi" style="flex:1;padding:5px 8px;font-size:11px" value="${s.note||''}" placeholder="例：累計：10・18・29" oninput="activityData.scores[${i}].note=this.value"/>
-        </div>
-        <div class="prize-editor-row">
-          <span class="pe-label" style="width:36px">分數</span>
-          <input class="se-input" type="number" value="${s.pts}" min="0" oninput="activityData.scores[${i}].pts=parseInt(this.value)||0"/>
-          <span style="font-family:'Cinzel',serif;font-size:10px;color:#8b6030">分</span>
-        </div>
+    const div = document.createElement('div');
+    div.className = 'prize-editor';
+    div.style.marginBottom = '8px';
+    div.innerHTML = `
+      <div class="prize-editor-row">
+        <span class="pe-label" style="width:36px">名稱</span>
+        <input class="fi score-label-input" data-i="${i}" style="flex:1;padding:5px 8px;font-size:11px" value="${s.label}"/>
+      </div>
+      <div class="prize-editor-row">
+        <span class="pe-label" style="width:36px">說明</span>
+        <input class="fi score-note-input" data-i="${i}" style="flex:1;padding:5px 8px;font-size:11px" value="${s.note||''}" placeholder="例：累計：10・18・29"/>
+      </div>
+      <div class="prize-editor-row">
+        <span class="pe-label" style="width:36px">分數</span>
+        <input class="se-input score-pts-input" data-i="${i}" type="number" value="${s.pts}" min="0"/>
+        <span style="font-family:'Cinzel',serif;font-size:10px;color:#8b6030">分</span>
       </div>`;
+    se.appendChild(div);
   });
 }
+
 
 // 儲存活動資料
 window.saveActivity = async function(){
   const btn = document.getElementById('saveActivityBtn');
   btn.disabled=true; btn.textContent='儲存中...';
   try{
+    // 從 DOM 讀取最新值（避免 oninput 失效的問題）
+    document.querySelectorAll('.prize-rank-input').forEach(el=>{
+      activityData.prizes[parseInt(el.dataset.i)].rank = el.value;
+    });
+    document.querySelectorAll('.prize-items-input').forEach(el=>{
+      activityData.prizes[parseInt(el.dataset.i)].items = el.value;
+    });
+    document.querySelectorAll('.score-label-input').forEach(el=>{
+      activityData.scores[parseInt(el.dataset.i)].label = el.value;
+    });
+    document.querySelectorAll('.score-note-input').forEach(el=>{
+      activityData.scores[parseInt(el.dataset.i)].note = el.value;
+    });
+    document.querySelectorAll('.score-pts-input').forEach(el=>{
+      activityData.scores[parseInt(el.dataset.i)].pts = parseInt(el.value)||0;
+    });
+
     await setDoc(doc(db,'settings','activity'), activityData);
     hideModal('activityModal');
     renderActivity();
