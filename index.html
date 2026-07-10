@@ -23,8 +23,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
 .btn-gold:hover{filter:brightness(1.1);transform:translateY(-1px)}
 .btn-ghost{background:rgba(245,220,140,.1);color:#e8d090;border:1.5px solid rgba(245,216,122,.4)!important}
 .btn-ghost:hover{background:rgba(245,220,140,.2);color:#f5d87a}
-.btn-amber{background:rgba(200,146,42,.18);color:#e8c878;border:1px solid rgba(200,146,42,.45)!important;font-size:9px;padding:3px 9px}
-.btn-amber:hover{background:rgba(200,146,42,.32);color:#f5d87a}
+.btn-amber{background:rgba(200,146,42,.55);color:#1c1410;border:1.5px solid rgba(200,146,42,.8)!important;font-size:9px;padding:3px 9px;font-weight:700}
+.btn-amber:hover{background:rgba(200,146,42,.78);color:#1c1410}
 .btn-danger{background:rgba(180,40,40,.2);color:#e89090;border:1px solid rgba(180,40,40,.4)!important}
 .btn-danger:hover{background:rgba(180,40,40,.35);color:#ffb0b0}
 
@@ -1054,7 +1054,7 @@ function showMonsterDetail(slotKey){
     const slotKeyLit = tab+'-'+pg+'-'+idx;
     const isLit = S.litSlots.has(slotKeyLit);
     const litBtn=document.createElement('button');
-    litBtn.className=isLit?'btn btn-ghost':'btn btn-amber';
+    litBtn.className=isLit?'btn btn-ghost':'btn btn-gold';
     litBtn.textContent=isLit?'🔘 取消點亮':'✨ 標記已打';
     litBtn.onclick=()=>toggleLight(slotKeyLit);
     btns.appendChild(litBtn);
