@@ -11,148 +11,152 @@
 html,body{height:100%;overflow:hidden}
 body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-direction:column}
 
-/* ── HEADER ── */
-.hdr{background:#1c1410;height:50px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #8b6914;flex-shrink:0}
-.logo{font-family:'Press Start 2P',monospace;font-size:clamp(7px,1.2vw,11px);background:linear-gradient(135deg,#f5d87a 0%,#c8922a 40%,#f5d87a 70%,#a06818 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:1px;white-space:nowrap}
+.hdr{background:#1c1410;height:52px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #8b6914;flex-shrink:0}
+.logo-wrap{display:flex;flex-direction:column;gap:1px}
+.logo{font-family:'Press Start 2P',monospace;font-size:clamp(7px,1.1vw,11px);background:linear-gradient(135deg,#f5d87a 0%,#c8922a 40%,#f5d87a 70%,#a06818 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:1px;white-space:nowrap}
+.logo-sub{font-family:'Cinzel',serif;font-size:clamp(7px,.9vw,9px);color:#8b6030;letter-spacing:2px;white-space:nowrap}
 .hdr-r{display:flex;align-items:center;gap:8px}
 .av{width:26px;height:26px;border-radius:50%;background:#8b6914;border:1.5px solid #c8922a;display:flex;align-items:center;justify-content:center;font-size:11px;color:#f5d87a;font-weight:700;flex-shrink:0}
 .avname{font-family:'Cinzel',serif;font-size:10px;color:#c8b078;letter-spacing:.4px}
-
-/* ── BUTTONS ── */
-.btn{padding:5px 13px;border-radius:4px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.4px;cursor:pointer;border:none;transition:all .18s;white-space:nowrap}
+.btn{padding:5px 12px;border-radius:4px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.4px;cursor:pointer;border:none;transition:all .18s;white-space:nowrap}
 .btn-gold{background:linear-gradient(135deg,#c8922a,#e8b840);color:#1c1410;font-weight:700;box-shadow:0 2px 7px rgba(200,146,42,.38)}
 .btn-gold:hover{filter:brightness(1.1);transform:translateY(-1px)}
 .btn-ghost{background:rgba(245,220,140,.1);color:#e8d090;border:1.5px solid rgba(245,216,122,.4)!important}
 .btn-ghost:hover{background:rgba(245,220,140,.2);color:#f5d87a}
-.btn-amber{background:rgba(200,146,42,.18);color:#e8c878;border:1px solid rgba(200,146,42,.45)!important;font-size:9px;padding:4px 10px}
+.btn-amber{background:rgba(200,146,42,.18);color:#e8c878;border:1px solid rgba(200,146,42,.45)!important;font-size:9px;padding:3px 9px}
 .btn-amber:hover{background:rgba(200,146,42,.32);color:#f5d87a}
 .btn-danger{background:rgba(180,40,40,.2);color:#e89090;border:1px solid rgba(180,40,40,.4)!important}
 .btn-danger:hover{background:rgba(180,40,40,.35);color:#ffb0b0}
 
-/* ── PLAYER BAR ── */
-.pbar{background:#241c12;height:36px;padding:0 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(139,105,20,.3);flex-shrink:0}
+.pbar{background:#241c12;height:34px;padding:0 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(139,105,20,.3);flex-shrink:0}
 .plbl{font-family:'Cinzel',serif;font-size:9px;color:#c8b078;letter-spacing:.4px}
-.psel{background:rgba(245,216,122,.07);border:1px solid rgba(139,105,20,.38);color:#c8b078;font-size:10px;padding:3px 22px 3px 8px;border-radius:4px;font-family:'Cinzel',serif;letter-spacing:.3px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath fill='%23c8b078' d='M4 5L0 0h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
+.psel{background:rgba(245,216,122,.07);border:1px solid rgba(139,105,20,.38);color:#c8b078;font-size:10px;padding:3px 20px 3px 7px;border-radius:4px;font-family:'Cinzel',serif;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath fill='%23c8b078' d='M4 5L0 0h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
 .psel option{background:#1c1410}
 
-/* ── MAIN: fills all remaining height ── */
-.main{flex:1;display:flex;align-items:center;justify-content:center;padding:14px 20px;min-height:0;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,rgba(200,146,42,.08),transparent 55%),#d4cfc6}
+/* ── MAIN: 3-column layout ── */
+.main{flex:1;display:flex;gap:10px;padding:10px 12px;min-height:0;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,rgba(200,146,42,.08),transparent 55%),#d4cfc6}
 
-/* ── BOOK ── */
-.book-outer{display:flex;height:100%;max-height:620px;filter:drop-shadow(0 14px 40px rgba(14,10,6,.5)) drop-shadow(0 3px 8px rgba(14,10,6,.28))}
+/* ── SIDE PANELS ── */
+.side{width:185px;flex-shrink:0;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;filter:drop-shadow(0 4px 16px rgba(14,10,6,.32))}
+.ph{background:#1c1410;padding:8px 11px;border-bottom:1.5px solid #8b6914;flex-shrink:0}
+.pt{font-family:'Cinzel',serif;font-size:10px;font-weight:700;background:linear-gradient(135deg,#f5d87a,#c8922a,#f5d87a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.5px}
+.pb{background:#faf4e4;flex:1;overflow-y:auto;padding:9px;scrollbar-width:thin;scrollbar-color:rgba(139,100,40,.3) transparent}
 
-/* ── TABS ── */
-.tab-col{display:flex;flex-direction:column;width:26px;background:#100b05;border-radius:6px 0 0 6px;padding:4px 0;gap:2px;box-shadow:inset -3px 0 8px rgba(0,0,0,.55);flex-shrink:0}
+/* activity */
+.prizes{display:flex;flex-direction:column;gap:5px;margin-bottom:2px}
+.prow{display:flex;align-items:flex-start;gap:7px;padding:6px 8px;border-radius:5px;border:1px solid rgba(139,100,40,.2);background:rgba(139,100,40,.06)}
+.pmed{font-size:15px;flex-shrink:0;line-height:1}
+.prank{font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:#c8922a;letter-spacing:.3px}
+.pdet{font-size:9px;color:#5c3a18;margin-top:2px;line-height:1.5}
+.stitle{font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:#8b6030;letter-spacing:.3px;margin:8px 0 5px;padding-top:7px;border-top:1px solid rgba(139,100,40,.2)}
+.srows{display:flex;flex-direction:column;gap:3px}
+.srow{display:flex;align-items:flex-start;justify-content:space-between;gap:4px;padding:5px 7px;border-radius:4px;background:rgba(139,100,40,.07);border:1px solid rgba(139,100,40,.15)}
+.slbl{font-family:'Cinzel',serif;font-size:8px;color:#5c3a18}
+.scum{font-family:'Cinzel',serif;font-size:6px;color:#a08040;margin-top:2px;line-height:1.4}
+.spts{font-family:'Cinzel',serif;font-size:9px;font-weight:700;color:#c8922a;flex-shrink:0;white-space:nowrap}
+
+/* ranking */
+.rlist{display:flex;flex-direction:column;gap:4px}
+.ri{display:flex;align-items:center;gap:6px;padding:6px 7px;border-radius:5px;border:1px solid rgba(139,100,40,.2);background:rgba(139,100,40,.06);transition:background .15s}
+.ri:hover{background:rgba(200,146,42,.1)}
+.ri.r1{border-color:rgba(218,165,32,.5);background:rgba(218,165,32,.08)}
+.ri.r2{border-color:rgba(180,180,180,.4);background:rgba(180,180,180,.06)}
+.ri.r3{border-color:rgba(180,120,60,.4);background:rgba(180,120,60,.06)}
+.rn{font-family:'Cinzel',serif;font-size:11px;font-weight:700;width:16px;text-align:center;flex-shrink:0}
+.r1 .rn{color:#d4a017}.r2 .rn{color:#909090}.r3 .rn{color:#b07830}.rng{color:#8b7040}
+.rav{width:22px;height:22px;border-radius:50%;background:#8b6914;border:1.5px solid #c8922a;display:flex;align-items:center;justify-content:center;font-size:10px;color:#f5d87a;font-weight:700;flex-shrink:0}
+.rinfo{flex:1;min-width:0}
+.rname{font-family:'Cinzel',serif;font-size:9px;font-weight:700;color:#3b2610;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rscore{font-family:'Cinzel',serif;font-size:8px;color:#c8922a;margin-top:1px}
+.rmed{font-size:10px;flex-shrink:0}
+.rempty{font-family:'Cinzel',serif;font-size:9px;color:#a08050;text-align:center;padding:16px 0;letter-spacing:.3px}
+
+/* ── BOOK CENTER ── */
+.book-wrap{flex:1;display:flex;align-items:center;justify-content:center;min-width:0}
+.book-outer{display:flex;height:100%;max-height:600px;filter:drop-shadow(0 14px 40px rgba(14,10,6,.5)) drop-shadow(0 3px 8px rgba(14,10,6,.28))}
+.tab-col{display:flex;flex-direction:column;width:24px;background:#100b05;border-radius:6px 0 0 6px;padding:4px 0;gap:2px;box-shadow:inset -3px 0 8px rgba(0,0,0,.55);flex-shrink:0}
 .stab{flex:1;cursor:pointer;transition:filter .15s;border-radius:2px 0 0 2px;position:relative;min-height:0}
-.stab:hover{filter:brightness(1.25)}
-.stab.on{filter:brightness(1.2)}
+.stab:hover{filter:brightness(1.25)}.stab.on{filter:brightness(1.2)}
 .stab::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:2px;height:0;background:#f5d87a;border-radius:1px 0 0 1px;transition:height .2s}
 .stab.on::after{height:60%}
 .s1{background:#3d6b32}.s2{background:#9e6e14}.s3{background:#1a5a8f}
 .s4{background:#4a3318}.s5{background:#4a7fa0}.s6{background:#9e2f12}
 .s7{background:#5e2e8f}.s8{background:#9e8f08}.s9{background:#8f1428}
-
-/* ── BOOK BODY ── */
 .book-body{display:flex;flex:1;background:#1c1410;min-width:0;min-height:0}
 .bspine{width:10px;flex-shrink:0;background:linear-gradient(to right,#5a3c10,#c8922a,#f0d060,#c8922a,#5a3c10);box-shadow:inset 0 0 4px rgba(0,0,0,.4)}
-
-/* ── PAGES ── */
-.page{width:min(340px,42vw);height:100%;display:flex;flex-direction:column;padding:13px 13px 40px;position:relative;overflow:hidden;flex-shrink:0}
+.page{width:min(300px,28vw);height:100%;display:flex;flex-direction:column;padding:12px 12px 38px;position:relative;overflow:hidden;flex-shrink:0}
 .page-l{background:linear-gradient(to right,#e8d49a,#f8f0df 10%,#faf4e4)}
-.page-l::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent,transparent 22px,rgba(160,130,70,.055) 22px,rgba(160,130,70,.055) 23px);pointer-events:none}
-.page-l::after{content:'';position:absolute;top:0;bottom:0;left:0;width:20px;background:linear-gradient(to right,rgba(120,80,20,.2),transparent);pointer-events:none}
+.page-l::before,.page-r::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent,transparent 22px,rgba(160,130,70,.055) 22px,rgba(160,130,70,.055) 23px);pointer-events:none}
+.page-l::after{content:'';position:absolute;top:0;bottom:0;left:0;width:18px;background:linear-gradient(to right,rgba(120,80,20,.2),transparent);pointer-events:none}
 .page-r{background:linear-gradient(to left,#e8d49a,#f8f0df 10%,#faf4e4);border-radius:0 5px 5px 0}
-.page-r::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent,transparent 22px,rgba(160,130,70,.055) 22px,rgba(160,130,70,.055) 23px);pointer-events:none}
-.page-r::after{content:'';position:absolute;top:0;bottom:0;right:0;width:20px;background:linear-gradient(to left,rgba(120,80,20,.2),transparent);pointer-events:none}
-
-/* ── CAT HEADER ── */
-.cat-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;padding-bottom:7px;border-bottom:1.5px solid rgba(139,100,40,.28);flex-shrink:0;position:relative;z-index:1}
-.cat-title{font-family:'Cinzel',serif;font-size:clamp(10px,1.2vw,13px);font-weight:700;background:linear-gradient(135deg,#c8922a,#f0c84a,#c8922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.4px}
-.pbadge{background:#2a1a08;color:#f5d87a;padding:2px 7px;border-radius:8px;font-family:'Cinzel',serif;font-size:8px;border:1px solid rgba(200,146,42,.28);flex-shrink:0}
-
-/* ── MONSTER GRID: KEY FIX ── */
-.mgrid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  grid-auto-rows:1fr;   /* rows share height equally */
-  gap:4px;
-  flex:1;               /* fill remaining page height */
-  min-height:0;         /* allow shrink */
-  position:relative;z-index:1;
-}
-.mc{border-radius:4px;cursor:pointer;position:relative;overflow:hidden;background:rgba(139,100,40,.1);display:flex;align-items:center;justify-content:center;transition:transform .13s,box-shadow .13s,border-color .13s;border:1px solid rgba(139,100,40,.22);min-height:0}
-.mc:hover{transform:translateY(-1px);border-color:#c8922a;box-shadow:0 3px 8px rgba(28,20,16,.25)}
+.page-r::after{content:'';position:absolute;top:0;bottom:0;right:0;width:18px;background:linear-gradient(to left,rgba(120,80,20,.2),transparent);pointer-events:none}
+.cat-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:6px;border-bottom:1.5px solid rgba(139,100,40,.28);flex-shrink:0;position:relative;z-index:1}
+.cat-title{font-family:'Cinzel',serif;font-size:clamp(9px,1.1vw,12px);font-weight:700;background:linear-gradient(135deg,#c8922a,#f0c84a,#c8922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.4px}
+.pbadge{background:#2a1a08;color:#f5d87a;padding:2px 6px;border-radius:8px;font-family:'Cinzel',serif;font-size:7px;border:1px solid rgba(200,146,42,.28);flex-shrink:0}
+.mgrid{display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:1fr;gap:3px;flex:1;min-height:0;position:relative;z-index:1}
+.mc{border-radius:3px;cursor:pointer;position:relative;overflow:hidden;background:rgba(139,100,40,.1);display:flex;align-items:center;justify-content:center;transition:transform .13s,border-color .13s;border:1px solid rgba(139,100,40,.22);min-height:0}
+.mc:hover{transform:translateY(-1px);border-color:#c8922a;box-shadow:0 2px 6px rgba(28,20,16,.2)}
 .mc.sel{border:1.5px solid #c8922a;box-shadow:0 0 0 1.5px #c8922a}
 .mc.filled{background:#fff}
-.mc.filled img{width:100%;height:100%;object-fit:cover;border-radius:3px}
-.mc-leaf{width:50%;height:50%;opacity:.17}
-.cnum{position:absolute;top:1px;left:2px;font-family:'Cinzel',serif;font-size:6px;color:rgba(139,100,40,.5)}
-.cname{position:absolute;bottom:0;left:0;right:0;background:rgba(20,12,4,.82);color:#f5d87a;font-family:'Cinzel',serif;font-size:6px;padding:1px 2px;text-align:center;line-height:1.3}
-
-/* ── PAGE NAV ── */
-.page-nav{position:absolute;bottom:10px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:10px;z-index:1}
-.arw{width:24px;height:24px;border-radius:50%;background:rgba(139,100,40,.18);border:1px solid rgba(139,100,40,.35);color:#c8922a;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:all .15s;line-height:1}
+.mc.filled img{width:100%;height:100%;object-fit:cover;border-radius:2px}
+.mc-leaf{width:48%;height:48%;opacity:.17}
+.cnum{position:absolute;top:1px;left:2px;font-family:'Cinzel',serif;font-size:5px;color:rgba(139,100,40,.5)}
+.cname{position:absolute;bottom:0;left:0;right:0;background:rgba(20,12,4,.82);color:#f5d87a;font-family:'Cinzel',serif;font-size:5px;padding:1px 2px;text-align:center;line-height:1.3}
+.page-nav{position:absolute;bottom:8px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:8px;z-index:1}
+.arw{width:22px;height:22px;border-radius:50%;background:rgba(139,100,40,.18);border:1px solid rgba(139,100,40,.35);color:#c8922a;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:all .15s;line-height:1}
 .arw:hover{background:#c8922a;color:#fff;border-color:#c8922a}
 .arw:disabled{opacity:.25;cursor:not-allowed}
-.pnum{font-family:'Cinzel',serif;font-size:9px;color:#c8a060;min-width:40px;text-align:center}
-
-/* ── DETAIL PANEL ── */
+.pnum{font-family:'Cinzel',serif;font-size:8px;color:#c8a060;min-width:36px;text-align:center}
 .detail-wrap{height:100%;display:flex;flex-direction:column;position:relative;z-index:1}
-.detail-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
-.medallion{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 36% 34%,rgba(245,216,122,.14),rgba(200,146,42,.04));border:1.5px solid rgba(200,146,42,.2);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 2px 12px rgba(200,146,42,.1)}
-.etxt{font-family:'Cinzel',serif;font-size:10px;background:linear-gradient(135deg,#c8922a,#f0c84a,#c8922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.4px;line-height:1.9}
-.detail-body{display:flex;flex-direction:column;gap:9px;height:100%;overflow:hidden}
-.d-img{flex-shrink:0;height:clamp(100px,18vh,170px);border:1.5px solid rgba(139,100,40,.28);border-radius:5px;background:rgba(139,100,40,.07);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 0 2px 6px rgba(20,12,4,.08)}
+.detail-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}
+.medallion{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 36% 34%,rgba(245,216,122,.14),rgba(200,146,42,.04));border:1.5px solid rgba(200,146,42,.2);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 2px 12px rgba(200,146,42,.1)}
+.etxt{font-family:'Cinzel',serif;font-size:9px;background:linear-gradient(135deg,#c8922a,#f0c84a,#c8922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.4px;line-height:1.9}
+.detail-body{display:flex;flex-direction:column;gap:8px;height:100%;overflow:hidden}
+.d-img{flex-shrink:0;height:clamp(80px,14vh,140px);border:1.5px solid rgba(139,100,40,.28);border-radius:5px;background:rgba(139,100,40,.07);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .d-img img{width:100%;height:100%;object-fit:contain}
-.d-name{font-family:'Cinzel',serif;font-size:clamp(13px,1.6vw,18px);font-weight:700;background:linear-gradient(135deg,#c8922a,#f5d87a,#c8922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;padding-bottom:8px;border-bottom:1px solid rgba(139,100,40,.25);letter-spacing:.4px;flex-shrink:0}
-.d-meta{display:grid;grid-template-columns:1fr 1fr;gap:5px;flex-shrink:0}
+.d-name{font-family:'Cinzel',serif;font-size:clamp(12px,1.4vw,16px);font-weight:700;background:linear-gradient(135deg,#c8922a,#f5d87a,#c8922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;padding-bottom:7px;border-bottom:1px solid rgba(139,100,40,.25);letter-spacing:.4px;flex-shrink:0}
+.d-meta{display:grid;grid-template-columns:1fr 1fr;gap:4px;flex-shrink:0}
 .mr{display:flex;gap:4px;align-items:center}
-.ml{background:rgba(139,100,40,.18);padding:2px 6px;border-radius:3px;font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:#c8922a;letter-spacing:.3px;flex-shrink:0}
-.mv{font-family:'Cinzel',serif;font-size:10px;background:linear-gradient(135deg,#c8922a,#f0c84a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.d-uploader{display:flex;align-items:center;gap:6px;border-top:1px solid rgba(139,100,40,.2);padding-top:7px;margin-top:auto;flex-shrink:0}
-.d-av{width:18px;height:18px;border-radius:50%;background:#8b6914;border:1px solid #c8922a;display:flex;align-items:center;justify-content:center;font-size:9px;color:#f5d87a;font-weight:700;flex-shrink:0}
-.d-un{font-family:'Cinzel',serif;font-size:9px;color:#c8a060;letter-spacing:.3px}
-.d-btns{display:flex;gap:7px;padding-top:7px;flex-shrink:0}
-.d-btns .btn{flex:1;padding:6px 8px;font-size:9px}
+.ml{background:rgba(139,100,40,.18);padding:1px 5px;border-radius:3px;font-family:'Cinzel',serif;font-size:7px;font-weight:700;color:#c8922a;letter-spacing:.3px;flex-shrink:0}
+.mv{font-family:'Cinzel',serif;font-size:9px;background:linear-gradient(135deg,#c8922a,#f0c84a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.d-uploader{display:flex;align-items:center;gap:5px;border-top:1px solid rgba(139,100,40,.2);padding-top:6px;margin-top:auto;flex-shrink:0}
+.d-av{width:17px;height:17px;border-radius:50%;background:#8b6914;border:1px solid #c8922a;display:flex;align-items:center;justify-content:center;font-size:8px;color:#f5d87a;font-weight:700;flex-shrink:0}
+.d-un{font-family:'Cinzel',serif;font-size:8px;color:#c8a060;letter-spacing:.3px}
+.d-btns{display:flex;gap:6px;padding-top:6px;flex-shrink:0}
+.d-btns .btn{flex:1;padding:5px 6px;font-size:9px}
 
-/* ── STATS ── */
-.sbar{background:#1c1410;height:34px;display:flex;justify-content:center;align-items:center;gap:36px;border-top:1px solid rgba(139,105,20,.25);flex-shrink:0;flex-wrap:wrap}
+.sbar{background:#1c1410;height:32px;display:flex;justify-content:center;align-items:center;gap:32px;border-top:1px solid rgba(139,105,20,.25);flex-shrink:0}
 .si{font-family:'Cinzel',serif;font-size:9px;color:#6b5030;letter-spacing:.3px;display:flex;align-items:center;gap:5px}
 .sv{color:#c8b078;font-weight:600}
 
 /* ── MODALS ── */
 .overlay{position:fixed;inset:0;z-index:100;background:rgba(14,10,6,.78);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px}
 .modal{background:#faf4e4;border-radius:12px;padding:28px;position:relative;width:100%;box-shadow:0 24px 64px rgba(14,10,6,.55);border:2px solid rgba(139,100,40,.35);max-height:92vh;overflow-y:auto}
-.modal-sm{max-width:400px}
-.modal-md{max-width:520px}
+.modal-sm{max-width:400px}.modal-md{max-width:520px}
 .modal-close{position:absolute;top:11px;right:13px;background:none;border:none;font-size:16px;cursor:pointer;color:#8b7040;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .18s}
 .modal-close:hover{background:rgba(139,100,40,.18)}
 .modal-title{font-family:'Cinzel',serif;font-size:19px;font-weight:700;background:linear-gradient(135deg,#c8922a,#f0c84a,#c8922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;letter-spacing:.5px;text-align:center}
-.modal-sub{font-family:'Cinzel',serif;font-size:10px;color:#8b7040;margin-bottom:18px;line-height:1.8;letter-spacing:.3px;text-align:center}
 .modal-tabs{display:flex;margin-bottom:20px;border-bottom:1.5px solid rgba(139,100,40,.25)}
 .modal-tab{flex:1;padding:8px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.5px;cursor:pointer;background:none;border:none;color:#8b7040;transition:all .18s;border-bottom:2px solid transparent;margin-bottom:-1.5px}
 .modal-tab.on{color:#c8922a;border-bottom-color:#c8922a}
-
-/* ── FORM ── */
 .fg{display:flex;flex-direction:column;gap:5px;margin-top:13px}
 .fg0{margin-top:0}
 .frow{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:13px}
 .frow2{display:grid;grid-template-columns:1fr 2fr;gap:9px;margin-top:13px}
 .flbl{font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#8b6030;letter-spacing:.3px}
-.fi{padding:8px 11px;border:1.5px solid rgba(139,100,40,.35);border-radius:5px;background:#fff;color:#3b2610;font-size:12px;font-family:'Cinzel',serif;width:100%;transition:border-color .18s;letter-spacing:.2px}
+.fi{padding:8px 10px;border:1.5px solid rgba(139,100,40,.35);border-radius:5px;background:#fff;color:#3b2610;font-size:12px;font-family:'Cinzel',serif;width:100%;transition:border-color .18s;letter-spacing:.2px}
 .fi:focus{outline:none;border-color:#c8922a;box-shadow:0 0 0 3px rgba(200,146,42,.12)}
 .fi::placeholder{color:#b09060;font-size:11px}
 .errmsg{font-family:'Cinzel',serif;font-size:10px;color:#c05030;margin-top:3px;letter-spacing:.2px}
-.upload-area{border:2px dashed rgba(139,100,40,.32);border-radius:8px;min-height:100px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .18s,background .18s;overflow:hidden;background:rgba(139,100,40,.05);margin-top:13px}
+.upload-area{border:2px dashed rgba(139,100,40,.32);border-radius:8px;min-height:95px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .18s,background .18s;overflow:hidden;background:rgba(139,100,40,.05);margin-top:13px}
 .upload-area:hover,.upload-area.drag{border-color:#c8922a;background:rgba(200,146,42,.07)}
 .uph{text-align:center;color:#8b7040;padding:14px}
-.uph-icon{font-size:26px;display:block;margin-bottom:5px}
+.uph-icon{font-size:24px;display:block;margin-bottom:5px}
 .uph-txt{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.3px}
-.uprev{width:100%;max-height:170px;object-fit:contain}
+.uprev{width:100%;max-height:160px;object-fit:contain}
+.size-hint{font-family:'Cinzel',serif;font-size:9px;color:#a09060;margin-top:4px;letter-spacing:.2px}
 .form-actions{display:flex;gap:8px;margin-top:18px}
 .form-actions .btn{flex:1;padding:10px;font-size:11px}
-
-/* ── TOAST ── */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#2a1a08;color:#f5d87a;padding:9px 22px;border-radius:8px;font-family:'Cinzel',serif;font-size:10px;z-index:200;border:1px solid rgba(200,146,42,.4);letter-spacing:.3px;max-width:380px;text-align:center;animation:tIn .25s ease;pointer-events:none}
 .toast.ok{background:#1a3a14;color:#90d870;border-color:rgba(100,180,60,.4)}
 .toast.err{background:#3a1414;color:#e88080;border-color:rgba(180,60,60,.4)}
@@ -163,7 +167,10 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
 <body>
 
 <header class="hdr">
-  <div class="logo">🍁 Artale 怪物圖鑑 🍁</div>
+  <div class="logo-wrap">
+    <div class="logo">🍁 Artale 怪物圖鑑 🍁</div>
+    <div class="logo-sub">第一屆 — 成為寶可夢大師</div>
+  </div>
   <div class="hdr-r">
     <button id="loginBtn" class="btn btn-gold">登入 / 註冊</button>
     <div id="userInfo" class="hidden" style="display:flex;align-items:center;gap:8px">
@@ -182,58 +189,126 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
 </div>
 
 <div class="main">
-  <div class="book-outer">
-    <div class="tab-col">
-      <div class="stab s1 on" data-tab="0"></div>
-      <div class="stab s2" data-tab="1"></div>
-      <div class="stab s3" data-tab="2"></div>
-      <div class="stab s4" data-tab="3"></div>
-      <div class="stab s5" data-tab="4"></div>
-      <div class="stab s6" data-tab="5"></div>
-      <div class="stab s7" data-tab="6"></div>
-      <div class="stab s8" data-tab="7"></div>
-      <div class="stab s9" data-tab="8"></div>
-    </div>
-    <div class="book-body">
-      <div class="page page-l">
-        <div class="cat-hdr">
-          <span class="cat-title" id="catTitle">🌲 森林怪物</span>
-          <span class="pbadge" id="progBadge">0 筆</span>
+
+  <!-- LEFT: 活動獎勵 -->
+  <div class="side">
+    <div class="ph"><div class="pt">🏆 活動獎勵</div></div>
+    <div class="pb">
+      <div class="prizes">
+        <div class="prow">
+          <div class="pmed">🥇</div>
+          <div><div class="prank">第一名</div><div class="pdet">突襲券 30張<br>傳送石 100顆</div></div>
         </div>
-        <div class="mgrid" id="monsterGrid"></div>
-        <div class="page-nav">
-          <button class="arw" id="prevBtn" disabled>‹</button>
-          <span class="pnum" id="pageNum">1 / 1</span>
-          <button class="arw" id="nextBtn" disabled>›</button>
+        <div class="prow">
+          <div class="pmed">🥈</div>
+          <div><div class="prank">第二名</div><div class="pdet">突襲券 20張<br>傳送石 60顆</div></div>
+        </div>
+        <div class="prow">
+          <div class="pmed">🥉</div>
+          <div><div class="prank">第三名</div><div class="pdet">突襲券 15張<br>傳送石 40顆</div></div>
         </div>
       </div>
-      <div class="bspine"></div>
-      <div class="page page-r">
-        <div class="detail-wrap">
-          <div class="detail-empty" id="detailEmpty">
-            <div class="medallion">📖</div>
-            <div class="etxt">點選左側怪物卡片<br>查看詳細資料</div>
+      <div class="stitle">📊 計分方式</div>
+      <div class="srows">
+        <div class="srow">
+          <div>
+            <div class="slbl">🥇 金牌（5張卡）</div>
+            <div class="scum">累計：10・18・29・37・50</div>
           </div>
-          <div class="detail-body hidden" id="detailBody">
-            <div class="d-img" id="dImg"></div>
-            <div class="d-name" id="dName"></div>
-            <div class="d-meta">
-              <div class="mr"><span class="ml">等級</span><span class="mv" id="dLv"></span></div>
-              <div class="mr"><span class="ml">HP</span><span class="mv" id="dHp"></span></div>
-              <div class="mr"><span class="ml">EXP</span><span class="mv" id="dExp"></span></div>
-              <div class="mr"><span class="ml">地區</span><span class="mv" id="dArea"></span></div>
-              <div class="mr" style="grid-column:span 2"><span class="ml">分類</span><span class="mv" id="dCat"></span></div>
+          <div class="spts">+10分</div>
+        </div>
+        <div class="srow">
+          <div><div class="slbl">🥈 銀牌（3張卡）</div></div>
+          <div class="spts">+5分</div>
+        </div>
+        <div class="srow">
+          <div><div class="slbl">🥉 銅牌（1張卡）</div></div>
+          <div class="spts">+2分</div>
+        </div>
+        <div class="srow">
+          <div>
+            <div class="slbl">👑 野王BOSS</div>
+            <div class="scum">累計：10・18・29・37・50</div>
+          </div>
+          <div class="spts">+8分</div>
+        </div>
+        <div class="srow">
+          <div>
+            <div class="slbl">⚔️ 突襲BOSS</div>
+            <div class="scum">累計：17・32・50・65・85</div>
+          </div>
+          <div class="spts">+15分</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER: BOOK -->
+  <div class="book-wrap">
+    <div class="book-outer">
+      <div class="tab-col">
+        <div class="stab s1 on" data-tab="0"></div>
+        <div class="stab s2" data-tab="1"></div>
+        <div class="stab s3" data-tab="2"></div>
+        <div class="stab s4" data-tab="3"></div>
+        <div class="stab s5" data-tab="4"></div>
+        <div class="stab s6" data-tab="5"></div>
+        <div class="stab s7" data-tab="6"></div>
+        <div class="stab s8" data-tab="7"></div>
+        <div class="stab s9" data-tab="8"></div>
+      </div>
+      <div class="book-body">
+        <div class="page page-l">
+          <div class="cat-hdr">
+            <span class="cat-title" id="catTitle">🌲 森林怪物</span>
+            <span class="pbadge" id="progBadge">0 筆</span>
+          </div>
+          <div class="mgrid" id="monsterGrid"></div>
+          <div class="page-nav">
+            <button class="arw" id="prevBtn" disabled>‹</button>
+            <span class="pnum" id="pageNum">1 / 1</span>
+            <button class="arw" id="nextBtn" disabled>›</button>
+          </div>
+        </div>
+        <div class="bspine"></div>
+        <div class="page page-r">
+          <div class="detail-wrap">
+            <div class="detail-empty" id="detailEmpty">
+              <div class="medallion">📖</div>
+              <div class="etxt">點選左側怪物卡片<br>查看詳細資料</div>
             </div>
-            <div class="d-uploader">
-              <div class="d-av" id="dAv"></div>
-              <span class="d-un" id="dUn"></span>
+            <div class="detail-body hidden" id="detailBody">
+              <div class="d-img" id="dImg"></div>
+              <div class="d-name" id="dName"></div>
+              <div class="d-meta">
+                <div class="mr"><span class="ml">等級</span><span class="mv" id="dLv"></span></div>
+                <div class="mr"><span class="ml">HP</span><span class="mv" id="dHp"></span></div>
+                <div class="mr"><span class="ml">EXP</span><span class="mv" id="dExp"></span></div>
+                <div class="mr"><span class="ml">地區</span><span class="mv" id="dArea"></span></div>
+                <div class="mr" style="grid-column:span 2"><span class="ml">分類</span><span class="mv" id="dCat"></span></div>
+              </div>
+              <div class="d-uploader">
+                <div class="d-av" id="dAv"></div>
+                <span class="d-un" id="dUn"></span>
+              </div>
+              <div class="d-btns" id="dBtns"></div>
             </div>
-            <div class="d-btns" id="dBtns"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- RIGHT: 排行榜 -->
+  <div class="side">
+    <div class="ph"><div class="pt">🏅 圖鑑排行榜</div></div>
+    <div class="pb">
+      <div class="rlist" id="rankList">
+        <div class="rempty">登入後開始計分</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="sbar">
@@ -298,12 +373,13 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
       <div class="fg fg0"><label class="flbl">出沒地區</label><input type="text" id="iArea" class="fi" placeholder="例：Ellinia"/></div>
     </div>
     <div class="fg">
-      <label class="flbl">怪物圖片（截圖或單圖，最大 5MB）</label>
+      <label class="flbl">怪物圖片（選填，自動壓縮）</label>
       <div class="upload-area" id="uploadArea">
         <input type="file" id="iImg" accept="image/*" hidden/>
         <div id="uPh" class="uph"><span class="uph-icon">📷</span><div class="uph-txt">點擊或拖曳上傳</div></div>
         <img id="uPrev" class="uprev hidden" alt=""/>
       </div>
+      <div class="size-hint" id="sizeHint">圖片會自動壓縮至適當大小</div>
       <div class="errmsg hidden" id="imgWarn"></div>
     </div>
     <div class="form-actions">
@@ -328,8 +404,6 @@ import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc,
   deleteDoc, onSnapshot, query, where, orderBy, serverTimestamp,
   updateDoc, increment }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 /* ============================================================
    🔧 換成你的 Firebase Config
@@ -345,25 +419,60 @@ const firebaseConfig = {
 };
 /* ============================================================ */
 
-const app     = initializeApp(firebaseConfig);
-const db      = getFirestore(app);
-const storage = getStorage(app);
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
 
 const CATS = ["🌲 森林怪物","🏜️ 沙漠怪物","🌊 海洋怪物","⛏️ 地下怪物","❄️ 冰雪怪物","🔥 火焰怪物","✨ 神秘怪物","☁️ 天空怪物","👑 魔王"];
 const TAB_PAGES = [[25],[25,25],[25,25,25,11],[25,25,6],[25,15],[25,1],[18],[5],[25,22]];
+const MAX_B64 = 700*1024;
 const $ = id => document.getElementById(id);
 const LEAF = document.getElementById('leafTpl').content;
-
 const S = { user:null, curTab:0, curPage:0, selEntry:null, viewPid:null, entries:[], players:[], unsub:null };
+
+/* ── COMPRESS IMAGE ── */
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let w=img.width, h=img.height;
+      const MAX=800;
+      if(w>MAX||h>MAX){ const r=Math.min(MAX/w,MAX/h); w=Math.round(w*r); h=Math.round(h*r); }
+      const canvas=document.createElement('canvas');
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      let q=0.85, b64='';
+      do{ b64=canvas.toDataURL('image/jpeg',q); q-=0.1; } while(b64.length>MAX_B64&&q>0.1);
+      if(b64.length>MAX_B64){ reject(new Error('圖片太大，請換一張')); return; }
+      resolve(b64);
+    };
+    img.onerror=()=>reject(new Error('圖片讀取失敗'));
+    img.src=url;
+  });
+}
+
+/* ── SCORE CALC ── */
+function calcScore(entryCount) {
+  // bronze=2, silver=5, gold=10 per medal tier (cumulative)
+  // simplified: each entry = 2pts base, bonus at 3rd (+3) and 5th (+5)
+  let s=0;
+  for(let i=1;i<=entryCount;i++){
+    if(i===1) s+=2;
+    else if(i===2) s+=5; // silver milestone
+    else if(i===3) s+=5;
+    else if(i===4) s+=10; // gold milestone
+    else if(i===5) s+=10;
+    else s+=2;
+  }
+  return s;
+}
 
 /* ── MODAL ── */
 window.showModal = id => $(id).classList.remove('hidden');
 window.hideModal = id => $(id).classList.add('hidden');
-document.querySelectorAll('.overlay').forEach(o => o.onclick = e => { if(e.target===o) o.classList.add('hidden'); });
-
-/* ── AUTH TAB ── */
+document.querySelectorAll('.overlay').forEach(o => o.onclick=e=>{ if(e.target===o) o.classList.add('hidden'); });
 window.switchTab = mode => {
-  const isL = mode==='login';
+  const isL=mode==='login';
   $('tabLogin').classList.toggle('on',isL); $('tabReg').classList.toggle('on',!isL);
   $('loginForm').classList.toggle('hidden',!isL); $('regForm').classList.toggle('hidden',isL);
   $('loginErr').classList.add('hidden'); $('regErr').classList.add('hidden');
@@ -407,9 +516,8 @@ window.doLogin = async () => {
   try{
     const snap=await getDoc(doc(db,'players',u));
     if(!snap.exists()){ e.textContent='帳號不存在'; e.classList.remove('hidden'); return; }
-    const data=snap.data();
-    if(data.passwordHash!==await hashPw(pw)){ e.textContent='密碼錯誤'; e.classList.remove('hidden'); return; }
-    const user={uid:u,displayName:data.displayName||u};
+    if(snap.data().passwordHash!==await hashPw(pw)){ e.textContent='密碼錯誤'; e.classList.remove('hidden'); return; }
+    const user={uid:u, displayName:snap.data().displayName||u};
     saveSession(user); onLoggedIn(user); hideModal('authModal');
     toast('歡迎回來，'+user.displayName+'！','ok');
     $('lUser').value=''; $('lPw').value='';
@@ -425,10 +533,9 @@ window.doRegister = async () => {
   if(pw.length<6){ e.textContent='密碼至少6字元'; e.classList.remove('hidden'); return; }
   if(pw!==pw2){ e.textContent='兩次密碼不一致'; e.classList.remove('hidden'); return; }
   try{
-    const snap=await getDoc(doc(db,'players',u));
-    if(snap.exists()){ e.textContent='此名稱已被使用'; e.classList.remove('hidden'); return; }
+    if((await getDoc(doc(db,'players',u))).exists()){ e.textContent='此名稱已被使用'; e.classList.remove('hidden'); return; }
     await setDoc(doc(db,'players',u),{ displayName:u, passwordHash:await hashPw(pw), entryCount:0, joinedAt:serverTimestamp() });
-    const user={uid:u,displayName:u};
+    const user={uid:u, displayName:u};
     saveSession(user); onLoggedIn(user); hideModal('authModal');
     toast('帳號建立成功！歡迎，'+u+'！','ok');
     $('rUser').value=''; $('rPw').value=''; $('rPw2').value='';
@@ -436,18 +543,11 @@ window.doRegister = async () => {
 };
 
 /* ── LOGOUT ── */
-$('logoutBtn').onclick=()=>{
-  S.user=null; clearSession();
-  $('loginBtn').classList.remove('hidden'); $('userInfo').classList.add('hidden');
-  $('addEntryBtn').classList.add('hidden'); $('myBtn').classList.add('hidden');
-  toast('已登出');
-};
+$('logoutBtn').onclick=()=>{ S.user=null; clearSession(); $('loginBtn').classList.remove('hidden'); $('userInfo').classList.add('hidden'); toast('已登出'); };
 $('loginBtn').onclick=()=>showModal('authModal');
-
-/* restore session */
 (()=>{ const s=loadSession(); if(s) onLoggedIn(s); })();
 
-/* ── PLAYERS ── */
+/* ── PLAYERS + RANKING ── */
 async function loadPlayers(){
   const snap=await getDocs(collection(db,'players'));
   S.players=[];
@@ -459,10 +559,32 @@ async function loadPlayers(){
     $('playerSelect').appendChild(o);
   });
   $('totalPlayers').textContent=snap.size;
-  if(S.players.length){
-    const top=S.players.reduce((a,b)=>(a.entryCount||0)>=(b.entryCount||0)?a:b);
-    $('topPlayer').textContent=top.displayName||'—';
-  }
+  renderRanking();
+}
+
+function renderRanking(){
+  const rl=$('rankList');
+  if(!S.players.length){ rl.innerHTML='<div class="rempty">尚無玩家資料</div>'; return; }
+  const sorted=[...S.players].sort((a,b)=>(b.entryCount||0)-(a.entryCount||0));
+  $('topPlayer').textContent=sorted[0]?.displayName||'—';
+  const medals=['🥇','🥈','🥉'];
+  const rc=['r1','r2','r3'];
+  rl.innerHTML='';
+  sorted.slice(0,10).forEach((p,i)=>{
+    const score=calcScore(p.entryCount||0);
+    const div=document.createElement('div');
+    div.className='ri'+(i<3?' '+rc[i]:'');
+    div.innerHTML=`
+      <div class="rn ${i>=3?'rng':''}">${i+1}</div>
+      <div class="rav">${p.displayName.charAt(0).toUpperCase()}</div>
+      <div class="rinfo">
+        <div class="rname">${p.displayName}</div>
+        <div class="rscore">${score} 分 · ${p.entryCount||0} 筆</div>
+      </div>
+      ${i<3?`<div class="rmed">${medals[i]}</div>`:''}
+    `;
+    rl.appendChild(div);
+  });
 }
 
 $('playerSelect').onchange=()=>{ S.viewPid=$('playerSelect').value||null; S.curPage=0; S.selEntry=null; clearDetail(); subscribe(); };
@@ -507,16 +629,12 @@ function renderGrid(){
   $('nextBtn').disabled=S.curPage>=total-1;
   $('pageNum').textContent=`${S.curPage+1} / ${total}`;
   $('progBadge').textContent=`${S.entries.length} 筆`;
-
   let offset=0;
   for(let i=0;i<S.curPage;i++) offset+=TAB_PAGES[S.curTab][i];
   const pageEntries=S.entries.slice(offset,offset+slots);
-
   const grid=$('monsterGrid');
-  const rows=Math.ceil(slots/5);
-  grid.style.gridTemplateRows=`repeat(${rows},1fr)`;
+  grid.style.gridTemplateRows=`repeat(${Math.ceil(slots/5)},1fr)`;
   grid.innerHTML='';
-
   for(let i=0;i<slots;i++){
     const e=pageEntries[i];
     const card=document.createElement('div');
@@ -524,12 +642,10 @@ function renderGrid(){
     if(e&&S.selEntry?.id===e.id) card.classList.add('sel');
     if(e){
       const num=document.createElement('span'); num.className='cnum'; num.textContent='#'+(offset+i+1); card.appendChild(num);
-      if(e.imageURL){ const img=document.createElement('img'); img.src=e.imageURL; img.alt=e.name; img.loading='lazy'; card.appendChild(img); }
+      if(e.imageB64){ const img=document.createElement('img'); img.src=e.imageB64; img.alt=e.name; img.loading='lazy'; card.appendChild(img); }
       const nm=document.createElement('div'); nm.className='cname'; nm.textContent=e.name; card.appendChild(nm);
       card.onclick=()=>{ S.selEntry=e; renderGrid(); showDetail(e); };
-    } else {
-      card.appendChild(LEAF.cloneNode(true));
-    }
+    } else { card.appendChild(LEAF.cloneNode(true)); }
     grid.appendChild(card);
   }
 }
@@ -544,7 +660,7 @@ function showDetail(e){
   $('dArea').textContent=e.area||'—';
   $('dCat').textContent=CATS[e.category]||'—';
   const wrap=$('dImg'); wrap.innerHTML='';
-  if(e.imageURL){ const img=document.createElement('img'); img.src=e.imageURL; wrap.appendChild(img); }
+  if(e.imageB64){ const img=document.createElement('img'); img.src=e.imageB64; wrap.appendChild(img); }
   const p=S.players.find(x=>x.id===e.playerId);
   $('dAv').textContent=(p?.displayName||'?').charAt(0).toUpperCase();
   $('dUn').textContent='Uploaded by '+(p?.displayName||'冒險者');
@@ -566,45 +682,45 @@ $('prevBtn').onclick=()=>{ if(S.curPage>0){S.curPage--;S.selEntry=null;clearDeta
 $('nextBtn').onclick=()=>{ if(S.curPage<TAB_PAGES[S.curTab].length-1){S.curPage++;S.selEntry=null;clearDetail();renderGrid();} };
 
 /* ── UPLOAD ── */
-let pendingFile=null;
+let pendingB64='';
 $('uploadArea').onclick=()=>$('iImg').click();
 $('uploadArea').ondragover=e=>{e.preventDefault();$('uploadArea').classList.add('drag')};
 $('uploadArea').ondragleave=()=>$('uploadArea').classList.remove('drag');
 $('uploadArea').ondrop=e=>{e.preventDefault();$('uploadArea').classList.remove('drag');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])};
 $('iImg').onchange=e=>{if(e.target.files[0])handleFile(e.target.files[0])};
-function handleFile(f){
-  if(f.size>5*1024*1024){ $('imgWarn').textContent='⚠️ 圖片超過5MB'; $('imgWarn').classList.remove('hidden'); return; }
-  $('imgWarn').classList.add('hidden'); pendingFile=f;
-  const r=new FileReader(); r.onload=ev=>{ $('uPrev').src=ev.target.result; $('uPrev').classList.remove('hidden'); $('uPh').classList.add('hidden'); }; r.readAsDataURL(f);
+async function handleFile(file){
+  $('imgWarn').classList.add('hidden'); $('sizeHint').textContent='壓縮中...';
+  try{
+    pendingB64=await compressImage(file);
+    $('uPrev').src=pendingB64; $('uPrev').classList.remove('hidden'); $('uPh').classList.add('hidden');
+    $('sizeHint').textContent=`壓縮後約 ${Math.round(pendingB64.length/1024)} KB`;
+  }catch(err){ $('imgWarn').textContent='⚠️ '+err.message; $('imgWarn').classList.remove('hidden'); $('sizeHint').textContent=''; pendingB64=''; }
 }
 
 /* ── SUBMIT ── */
 $('submitBtn').onclick=async()=>{
   if(!S.user) return;
   const name=$('iName').value.trim();
-  if(!name){toast('請輸入怪物名稱','err');return;}
-  $('submitBtn').disabled=true; $('submitBtn').textContent='上傳中...';
+  if(!name){ toast('請輸入怪物名稱','err'); return; }
+  $('submitBtn').disabled=true; $('submitBtn').textContent='新增中...';
   try{
-    let imageURL='';
-    if(pendingFile){
-      const sr=ref(storage,`entries/${S.user.uid}/${Date.now()}_${pendingFile.name}`);
-      await uploadBytes(sr,pendingFile); imageURL=await getDownloadURL(sr);
-    }
     const cat=parseInt($('iCat').value);
     await addDoc(collection(db,'entries'),{
-      name,category:cat,
+      name, category:cat,
       level:$('iLv').value?parseInt($('iLv').value):null,
       hp:$('iHp').value?parseInt($('iHp').value):null,
       exp:$('iExp').value?parseInt($('iExp').value):null,
       area:$('iArea').value.trim()||null,
-      imageURL, playerId:S.user.uid, playerName:S.user.displayName,
+      imageB64:pendingB64||null,
+      playerId:S.user.uid, playerName:S.user.displayName,
       createdAt:serverTimestamp()
     });
     await updateDoc(doc(db,'players',S.user.uid),{entryCount:increment(1)});
     hideModal('addModal');
     ['iName','iLv','iHp','iExp','iArea'].forEach(id=>$(id).value='');
-    $('iImg').value=''; pendingFile=null;
+    $('iImg').value=''; pendingB64='';
     $('uPrev').classList.add('hidden'); $('uPh').classList.remove('hidden');
+    $('sizeHint').textContent='圖片會自動壓縮至適當大小';
     toast('✅ 新增成功！','ok');
     if(cat!==S.curTab){ S.curTab=cat; S.curPage=0; document.querySelectorAll('.stab').forEach(t=>t.classList.toggle('on',parseInt(t.dataset.tab)===cat)); }
     loadPlayers(); subscribe();
