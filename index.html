@@ -1306,10 +1306,20 @@ function buildActivityEditors(){
   se.innerHTML = '';
   activityData.scores.forEach((s,i)=>{
     se.innerHTML += `
-      <div class="score-editor">
-        <span class="se-label">${s.label}</span>
-        <input class="se-input" type="number" value="${s.pts}" min="0" oninput="activityData.scores[${i}].pts=parseInt(this.value)||0" title="分數"/>
-        <span style="font-family:'Cinzel',serif;font-size:9px;color:#8b6030">分</span>
+      <div class="prize-editor" style="margin-bottom:8px">
+        <div class="prize-editor-row">
+          <span class="pe-label" style="width:36px">名稱</span>
+          <input class="fi" style="flex:1;padding:5px 8px;font-size:11px" value="${s.label}" oninput="activityData.scores[${i}].label=this.value"/>
+        </div>
+        <div class="prize-editor-row">
+          <span class="pe-label" style="width:36px">說明</span>
+          <input class="fi" style="flex:1;padding:5px 8px;font-size:11px" value="${s.note||''}" placeholder="例：累計：10・18・29" oninput="activityData.scores[${i}].note=this.value"/>
+        </div>
+        <div class="prize-editor-row">
+          <span class="pe-label" style="width:36px">分數</span>
+          <input class="se-input" type="number" value="${s.pts}" min="0" oninput="activityData.scores[${i}].pts=parseInt(this.value)||0"/>
+          <span style="font-family:'Cinzel',serif;font-size:10px;color:#8b6030">分</span>
+        </div>
       </div>`;
   });
 }
