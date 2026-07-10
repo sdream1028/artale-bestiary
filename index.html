@@ -113,18 +113,18 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
 .medallion{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 36% 34%,rgba(245,216,122,.14),rgba(200,146,42,.04));border:1.5px solid rgba(200,146,42,.2);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 2px 12px rgba(200,146,42,.1)}
 .etxt{font-family:'Cinzel',serif;font-size:9px;background:linear-gradient(135deg,#c8922a,#f0c84a,#c8922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.4px;line-height:1.9}
 .detail-body{display:flex;flex-direction:column;gap:8px;height:100%;overflow:hidden}
-.d-img{flex-shrink:0;height:clamp(80px,14vh,140px);border:1.5px solid rgba(139,100,40,.28);border-radius:5px;background:rgba(139,100,40,.07);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.d-img{flex-shrink:0;height:clamp(120px,20vh,200px);border:1.5px solid rgba(139,100,40,.28);border-radius:5px;background:rgba(139,100,40,.07);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .d-img img{width:100%;height:100%;object-fit:contain}
-.d-name{font-family:'Cinzel',serif;font-size:clamp(12px,1.4vw,16px);font-weight:700;background:linear-gradient(135deg,#c8922a,#f5d87a,#c8922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;padding-bottom:7px;border-bottom:1px solid rgba(139,100,40,.25);letter-spacing:.4px;flex-shrink:0}
-.d-meta{display:grid;grid-template-columns:1fr 1fr;gap:4px;flex-shrink:0}
-.mr{display:flex;gap:4px;align-items:center}
-.ml{background:rgba(139,100,40,.18);padding:1px 5px;border-radius:3px;font-family:'Cinzel',serif;font-size:7px;font-weight:700;color:#c8922a;letter-spacing:.3px;flex-shrink:0}
-.mv{font-family:'Cinzel',serif;font-size:9px;background:linear-gradient(135deg,#c8922a,#f0c84a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.d-uploader{display:flex;align-items:center;gap:5px;border-top:1px solid rgba(139,100,40,.2);padding-top:6px;margin-top:auto;flex-shrink:0}
-.d-av{width:17px;height:17px;border-radius:50%;background:#8b6914;border:1px solid #c8922a;display:flex;align-items:center;justify-content:center;font-size:8px;color:#f5d87a;font-weight:700;flex-shrink:0}
-.d-un{font-family:'Cinzel',serif;font-size:8px;color:#c8a060;letter-spacing:.3px}
-.d-btns{display:flex;gap:6px;padding-top:6px;flex-shrink:0}
-.d-btns .btn{flex:1;padding:5px 6px;font-size:9px}
+.d-name{font-family:'Cinzel',serif;font-size:clamp(15px,1.8vw,22px);font-weight:700;background:linear-gradient(135deg,#c8922a,#f5d87a,#c8922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;padding-bottom:10px;border-bottom:1.5px solid rgba(139,100,40,.25);letter-spacing:.5px;flex-shrink:0}
+.d-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex-shrink:0;margin-top:4px}
+.mr{display:flex;gap:6px;align-items:center}
+.ml{background:rgba(139,100,40,.18);padding:3px 8px;border-radius:4px;font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:#c8922a;letter-spacing:.3px;flex-shrink:0}
+.mv{font-family:'Cinzel',serif;font-size:13px;background:linear-gradient(135deg,#c8922a,#f0c84a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.d-uploader{display:flex;align-items:center;gap:7px;border-top:1.5px solid rgba(139,100,40,.2);padding-top:10px;margin-top:auto;flex-shrink:0}
+.d-av{width:24px;height:24px;border-radius:50%;background:#8b6914;border:1.5px solid #c8922a;display:flex;align-items:center;justify-content:center;font-size:12px;color:#f5d87a;font-weight:700;flex-shrink:0}
+.d-un{font-family:'Cinzel',serif;font-size:11px;color:#c8a060;letter-spacing:.3px}
+.d-btns{display:flex;gap:8px;padding-top:8px;flex-shrink:0}
+.d-btns .btn{flex:1;padding:9px 10px;font-size:12px}
 
 .sbar{background:#1c1410;height:40px;display:flex;justify-content:center;align-items:center;gap:40px;border-top:1px solid rgba(139,105,20,.25);flex-shrink:0}
 .si{font-family:'Cinzel',serif;font-size:13px;color:#6b5030;letter-spacing:.3px;display:flex;align-items:center;gap:6px}
@@ -594,8 +594,13 @@ async function loadPlayers(){
   $('playerSelect').innerHTML='<option value="">— 所有玩家 —</option>';
   // 同時讀取每人的 litSlots
   const litPromises = [];
+  const seenNames = new Set();
   snap.forEach(d=>{
     const p={id:d.id,...d.data()}; delete p.passwordHash;
+    // 防重複：同名只取第一筆
+    const nameLower = (p.displayName||'').toLowerCase().trim();
+    if(seenNames.has(nameLower)) return;
+    seenNames.add(nameLower);
     S.players.push(p);
     litPromises.push(
       getDoc(doc(db,'litSlots',p.id)).then(ls=>{
