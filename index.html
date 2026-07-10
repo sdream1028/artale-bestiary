@@ -661,7 +661,7 @@ function renderRanking(){
         <div class="rname">${p.displayName}</div>
         <div class="rscore">${p.litCount||0} 格點亮</div>
       </div>
-      ${i<3?`<div class="rmed">${medals[i]}</div>`:''}
+      ${i<3?'<div class="rmed">'+medals[i]+'</div>':''}
     `;
     rl.appendChild(div);
   });
@@ -1268,7 +1268,7 @@ function renderActivity(){
   });
   html += '</div><div class="stitle">📊 計分方式</div><div class="srows">';
   activityData.scores.forEach(s=>{
-    html += `<div class="srow"><div><div class="slbl">${s.label}</div>${s.note?`<div class="scum">${s.note}</div>`:''}</div><div class="spts">+${s.pts}分</div></div>`;
+    html += `<div class="srow"><div><div class="slbl">${s.label}</div>${s.note?'<div class="scum">'+s.note+'</div>':''}</div><div class="spts">+${s.pts}分</div></div>`;
   });
   html += '</div>';
   panel.innerHTML = html;
