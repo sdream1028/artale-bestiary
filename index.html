@@ -488,7 +488,7 @@ const TAB_PAGES = [[25],[25,25],[25,25,25,11],[25,25,6],[25,15],[25,1],[18],[5],
 const MAX_B64 = 700*1024;
 const $ = id => document.getElementById(id);
 const LEAF = document.getElementById('leafTpl').content;
-const S = { user:null, curTab:0, curPage:0, selEntry:null, viewPid:null, entries:[], players:[], unsub:null, litSlots:new Set(), litUnsub:null, cardCounts:{}, pendingSlotKey:null, pendingB64:'', selectedCount:1, monsterData:{}, monsterUnsub:null, currentSlotKey:null };
+const S = { user:null, curTab:0, curPage:0, selEntry:null, viewPid:null, entries:[], players:[], unsub:null, litSlots:new Set(), litUnsub:null, cardCounts:{}, pendingSlotKey:null, pendingB64:'', selectedCount:1, monsterData:{}, monsterUnsub:null, currentSlotKey:null, loadingPlayers:false };
 
 
 /* ── SCORE CALC ── */
@@ -589,6 +589,9 @@ $('loginBtn').onclick=()=>showModal('authModal');
 
 /* ── PLAYERS + RANKING ── */
 async function loadPlayers(){
+  if(S.loadingPlayers) return;
+  S.loadingPlayers = true;
+  try{
   const snap=await getDocs(collection(db,'players'));
   S.players=[];
   $('playerSelect').innerHTML='<option value="">— 所有玩家 —</option>';
@@ -619,6 +622,7 @@ async function loadPlayers(){
   });
   $('totalPlayers').textContent=snap.size;
   renderRanking();
+  } finally { S.loadingPlayers = false; }
 }
 
 function renderRanking(){
