@@ -37,39 +37,39 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
 .main{flex:1;display:flex;gap:8px;padding:8px 10px;min-height:0;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,rgba(200,146,42,.08),transparent 55%),#d4cfc6}
 
 /* ── SIDE PANELS ── */
-.side{width:155px;flex-shrink:0;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;filter:drop-shadow(0 4px 16px rgba(14,10,6,.32))}
-.ph{background:#1c1410;padding:8px 11px;border-bottom:1.5px solid #8b6914;flex-shrink:0}
-.pt{font-family:'Cinzel',serif;font-size:10px;font-weight:700;background:linear-gradient(135deg,#f5d87a,#c8922a,#f5d87a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.5px}
-.pb{background:#faf4e4;flex:1;overflow-y:auto;padding:9px;scrollbar-width:thin;scrollbar-color:rgba(139,100,40,.3) transparent}
+.side{width:250px;flex-shrink:0;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;filter:drop-shadow(0 4px 16px rgba(14,10,6,.32))}
+.ph{background:#1c1410;padding:10px 14px;border-bottom:1.5px solid #8b6914;flex-shrink:0}
+.pt{font-family:'Cinzel',serif;font-size:13px;font-weight:700;background:linear-gradient(135deg,#f5d87a,#c8922a,#f5d87a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.5px}
+.pb{background:#faf4e4;flex:1;overflow-y:auto;padding:12px;scrollbar-width:thin;scrollbar-color:rgba(139,100,40,.3) transparent}
 
 /* activity */
 .prizes{display:flex;flex-direction:column;gap:5px;margin-bottom:2px}
-.prow{display:flex;align-items:flex-start;gap:7px;padding:6px 8px;border-radius:5px;border:1px solid rgba(139,100,40,.2);background:rgba(139,100,40,.06)}
-.pmed{font-size:15px;flex-shrink:0;line-height:1}
-.prank{font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:#c8922a;letter-spacing:.3px}
-.pdet{font-size:9px;color:#5c3a18;margin-top:2px;line-height:1.5}
-.stitle{font-family:'Cinzel',serif;font-size:8px;font-weight:700;color:#8b6030;letter-spacing:.3px;margin:8px 0 5px;padding-top:7px;border-top:1px solid rgba(139,100,40,.2)}
+.prow{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;border-radius:5px;border:1px solid rgba(139,100,40,.2);background:rgba(139,100,40,.06)}
+.pmed{font-size:20px;flex-shrink:0;line-height:1}
+.prank{font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:#c8922a;letter-spacing:.3px}
+.pdet{font-size:11px;color:#5c3a18;margin-top:3px;line-height:1.6}
+.stitle{font-family:'Cinzel',serif;font-size:11px;font-weight:700;color:#8b6030;letter-spacing:.3px;margin:10px 0 6px;padding-top:8px;border-top:1px solid rgba(139,100,40,.2)}
 .srows{display:flex;flex-direction:column;gap:3px}
-.srow{display:flex;align-items:flex-start;justify-content:space-between;gap:4px;padding:5px 7px;border-radius:4px;background:rgba(139,100,40,.07);border:1px solid rgba(139,100,40,.15)}
-.slbl{font-family:'Cinzel',serif;font-size:8px;color:#5c3a18}
-.scum{font-family:'Cinzel',serif;font-size:6px;color:#a08040;margin-top:2px;line-height:1.4}
-.spts{font-family:'Cinzel',serif;font-size:9px;font-weight:700;color:#c8922a;flex-shrink:0;white-space:nowrap}
+.srow{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;padding:7px 9px;border-radius:4px;background:rgba(139,100,40,.07);border:1px solid rgba(139,100,40,.15)}
+.slbl{font-family:'Cinzel',serif;font-size:11px;color:#5c3a18}
+.scum{font-family:'Cinzel',serif;font-size:9px;color:#a08040;margin-top:3px;line-height:1.5}
+.spts{font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:#c8922a;flex-shrink:0;white-space:nowrap}
 
 /* ranking */
-.rlist{display:flex;flex-direction:column;gap:4px}
-.ri{display:flex;align-items:center;gap:6px;padding:6px 7px;border-radius:5px;border:1px solid rgba(139,100,40,.2);background:rgba(139,100,40,.06);transition:background .15s}
+.rlist{display:flex;flex-direction:column;gap:6px}
+.ri{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:5px;border:1px solid rgba(139,100,40,.2);background:rgba(139,100,40,.06);transition:background .15s}
 .ri:hover{background:rgba(200,146,42,.1)}
 .ri.r1{border-color:rgba(218,165,32,.5);background:rgba(218,165,32,.08)}
 .ri.r2{border-color:rgba(180,180,180,.4);background:rgba(180,180,180,.06)}
 .ri.r3{border-color:rgba(180,120,60,.4);background:rgba(180,120,60,.06)}
-.rn{font-family:'Cinzel',serif;font-size:11px;font-weight:700;width:16px;text-align:center;flex-shrink:0}
+.rn{font-family:'Cinzel',serif;font-size:14px;font-weight:700;width:20px;text-align:center;flex-shrink:0}
 .r1 .rn{color:#d4a017}.r2 .rn{color:#909090}.r3 .rn{color:#b07830}.rng{color:#8b7040}
-.rav{width:22px;height:22px;border-radius:50%;background:#8b6914;border:1.5px solid #c8922a;display:flex;align-items:center;justify-content:center;font-size:10px;color:#f5d87a;font-weight:700;flex-shrink:0}
+.rav{width:30px;height:30px;border-radius:50%;background:#8b6914;border:1.5px solid #c8922a;display:flex;align-items:center;justify-content:center;font-size:13px;color:#f5d87a;font-weight:700;flex-shrink:0}
 .rinfo{flex:1;min-width:0}
-.rname{font-family:'Cinzel',serif;font-size:9px;font-weight:700;color:#3b2610;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rscore{font-family:'Cinzel',serif;font-size:8px;color:#c8922a;margin-top:1px}
-.rmed{font-size:10px;flex-shrink:0}
-.rempty{font-family:'Cinzel',serif;font-size:9px;color:#a08050;text-align:center;padding:16px 0;letter-spacing:.3px}
+.rname{font-family:'Cinzel',serif;font-size:12px;font-weight:700;color:#3b2610;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rscore{font-family:'Cinzel',serif;font-size:11px;color:#c8922a;margin-top:2px}
+.rmed{font-size:14px;flex-shrink:0}
+.rempty{font-family:'Cinzel',serif;font-size:12px;color:#a08050;text-align:center;padding:20px 0;letter-spacing:.3px}
 
 /* ── BOOK CENTER ── */
 .book-wrap{flex:1;display:flex;align-items:center;justify-content:center;min-width:0}
@@ -197,15 +197,15 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
       <div class="prizes">
         <div class="prow">
           <div class="pmed">🥇</div>
-          <div><div class="prank">第一名</div><div class="pdet">突襲券 30張<br>楓幣石 100顆</div></div>
+          <div><div class="prank">第一名</div><div class="pdet">突襲券 30張<br>傳送石 100顆</div></div>
         </div>
         <div class="prow">
           <div class="pmed">🥈</div>
-          <div><div class="prank">第二名</div><div class="pdet">突襲券 20張<br>楓幣石 60顆</div></div>
+          <div><div class="prank">第二名</div><div class="pdet">突襲券 20張<br>傳送石 60顆</div></div>
         </div>
         <div class="prow">
           <div class="pmed">🥉</div>
-          <div><div class="prank">第三名</div><div class="pdet">突襲券 15張<br>楓幣石 40顆</div></div>
+          <div><div class="prank">第三名</div><div class="pdet">突襲券 15張<br>傳送石 40顆</div></div>
         </div>
       </div>
       <div class="stitle">📊 計分方式</div>
