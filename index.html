@@ -379,6 +379,47 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
   </div>
 </div>
 
+
+<!-- MODAL: 怪物資料 -->
+<div class="overlay hidden" id="monsterModal">
+  <div class="modal modal-md">
+    <button class="modal-close" onclick="hideModal('monsterModal')">✕</button>
+    <div class="modal-title" id="monsterModalTitle">📖 怪物資料</div>
+    <div class="fg fg0">
+      <label class="flbl">怪物名稱</label>
+      <input type="text" id="mName" class="fi" placeholder="例：Green Mushroom"/>
+    </div>
+    <div class="frow">
+      <div class="fg fg0"><label class="flbl">等級</label><input type="number" id="mLv" class="fi" placeholder="15" min="1" max="999"/></div>
+      <div class="fg fg0"><label class="flbl">HP</label><input type="number" id="mHp" class="fi" placeholder="400"/></div>
+      <div class="fg fg0"><label class="flbl">EXP</label><input type="number" id="mExp" class="fi" placeholder="80"/></div>
+    </div>
+    <div class="fg">
+      <label class="flbl">出沒地區</label>
+      <input type="text" id="mArea" class="fi" placeholder="例：Ellinia"/>
+    </div>
+    <div class="fg">
+      <label class="flbl">怪物圖片（公共，會取代舊圖）</label>
+      <div class="upload-area" id="mUploadArea">
+        <input type="file" id="mImg" accept="image/*" hidden/>
+        <div id="mUPh" class="uph">
+          <span class="uph-icon">📷</span>
+          <div class="uph-txt">點擊或拖曳上傳</div>
+        </div>
+        <img id="mUPrev" class="uprev hidden" alt=""/>
+      </div>
+      <div class="size-hint" id="mSizeHint">圖片會自動壓縮</div>
+      <div class="errmsg hidden" id="mImgWarn"></div>
+    </div>
+    <div class="monster-editor" id="mLastEdit" style="font-family:'Cinzel',serif;font-size:9px;color:#a08050;margin-top:6px"></div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="hideModal('monsterModal')">取消</button>
+      <button id="mDeleteImgBtn" class="btn btn-danger hidden">🗑 刪除圖片</button>
+      <button id="mSaveBtn" class="btn btn-gold">💾 儲存</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: AUTH -->
 <div class="overlay hidden" id="authModal">
   <div class="modal modal-sm">
@@ -447,7 +488,7 @@ const TAB_PAGES = [[25],[25,25],[25,25,25,11],[25,25,6],[25,15],[25,1],[18],[5],
 const MAX_B64 = 700*1024;
 const $ = id => document.getElementById(id);
 const LEAF = document.getElementById('leafTpl').content;
-const S = { user:null, curTab:0, curPage:0, selEntry:null, viewPid:null, entries:[], players:[], unsub:null, litSlots:new Set(), litUnsub:null, cardCounts:{}, pendingSlotKey:null, pendingB64:'', selectedCount:1 };
+const S = { user:null, curTab:0, curPage:0, selEntry:null, viewPid:null, entries:[], players:[], unsub:null, litSlots:new Set(), litUnsub:null, cardCounts:{}, pendingSlotKey:null, pendingB64:'', selectedCount:1, monsterData:{}, monsterUnsub:null, currentSlotKey:null };
 
 
 /* ── SCORE CALC ── */
@@ -551,10 +592,24 @@ async function loadPlayers(){
   const snap=await getDocs(collection(db,'players'));
   S.players=[];
   $('playerSelect').innerHTML='<option value="">— 所有玩家 —</option>';
+  // 同時讀取每人的 litSlots
+  const litPromises = [];
   snap.forEach(d=>{
     const p={id:d.id,...d.data()}; delete p.passwordHash;
     S.players.push(p);
-    const o=document.createElement('option'); o.value=p.id; o.textContent=`${p.displayName} (${p.entryCount||0})`;
+    litPromises.push(
+      getDoc(doc(db,'litSlots',p.id)).then(ls=>{
+        if(ls.exists()){
+          const data=ls.data();
+          p.litCount=Object.keys(data).filter(k=>data[k]&&data[k]!==false).length;
+        } else { p.litCount=0; }
+      }).catch(()=>{ p.litCount=0; })
+    );
+  });
+  await Promise.all(litPromises);
+  S.players.forEach(p=>{
+    const o=document.createElement('option'); o.value=p.id;
+    o.textContent=`${p.displayName} (${p.litCount||0} 點亮)`;
     $('playerSelect').appendChild(o);
   });
   $('totalPlayers').textContent=snap.size;
@@ -564,13 +619,12 @@ async function loadPlayers(){
 function renderRanking(){
   const rl=$('rankList');
   if(!S.players.length){ rl.innerHTML='<div class="rempty">尚無玩家資料</div>'; return; }
-  const sorted=[...S.players].sort((a,b)=>(b.entryCount||0)-(a.entryCount||0));
+  const sorted=[...S.players].sort((a,b)=>(b.litCount||0)-(a.litCount||0));
   $('topPlayer').textContent=sorted[0]?.displayName||'—';
   const medals=['🥇','🥈','🥉'];
   const rc=['r1','r2','r3'];
   rl.innerHTML='';
   sorted.slice(0,10).forEach((p,i)=>{
-    const score=calcScore(p.entryCount||0);
     const div=document.createElement('div');
     div.className='ri'+(i<3?' '+rc[i]:'');
     div.innerHTML=`
@@ -578,7 +632,7 @@ function renderRanking(){
       <div class="rav">${p.displayName.charAt(0).toUpperCase()}</div>
       <div class="rinfo">
         <div class="rname">${p.displayName}</div>
-        <div class="rscore">${score} 分 · ${p.entryCount||0} 筆</div>
+        <div class="rscore">${p.litCount||0} 格點亮</div>
       </div>
       ${i<3?`<div class="rmed">${medals[i]}</div>`:''}
     `;
@@ -593,7 +647,7 @@ $('myBtn').onclick=()=>{ if(!S.user)return; S.viewPid=S.user.uid; $('playerSelec
 document.querySelectorAll('.stab').forEach(t=>{
   t.onclick=()=>{
     document.querySelectorAll('.stab').forEach(x=>x.classList.remove('on')); t.classList.add('on');
-    S.curTab=parseInt(t.dataset.tab); S.curPage=0; S.selEntry=null; clearDetail(); subscribe();
+    S.curTab=parseInt(t.dataset.tab); S.curPage=0; S.selEntry=null; clearDetail(); subscribe(); subscribeMonsters();
   };
 });
 
@@ -633,41 +687,52 @@ function renderGrid(){
   grid.innerHTML='';
 
   for(let i=0;i<slots;i++){
-    const cropKey = (S.curTab+1)+'-'+(S.curPage+1)+'-'+i;
-    const slotKey = S.curTab+'-'+S.curPage+'-'+i;
-    const isLit = S.litSlots.has(slotKey);
-
+    const cropKey=(S.curTab+1)+'-'+(S.curPage+1)+'-'+i;
+    const slotKey=S.curTab+'-'+S.curPage+'-'+i;
+    const isLit=S.litSlots.has(slotKey);
+    const mData=S.monsterData[slotKey];
     const card=document.createElement('div');
     card.className='mc';
 
-    if(CARD_IMGS[cropKey]){
-      // 有圖片：灰階或彩色
+    // 決定顯示圖片來源：公共圖 > CARD_IMGS
+    const displayImg = (mData&&mData.imageB64) ? mData.imageB64 : (CARD_IMGS[cropKey]||null);
+
+    if(displayImg){
       card.classList.add('filled');
       const img=document.createElement('img');
-      img.src=CARD_IMGS[cropKey];
-      img.loading='lazy';
+      img.src=displayImg; img.loading='lazy';
       img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:3px;transition:filter .3s;'
-        + (isLit ? '' : 'filter:grayscale(100%) brightness(0.55)');
+        +(isLit?'':'filter:grayscale(100%) brightness(0.55)');
       card.appendChild(img);
-
       if(isLit){
         card.classList.add('lit');
-        const num=document.createElement('span'); num.className='cnum'; num.textContent='#'+(i+1); card.appendChild(num);
+        const count=(S.cardCounts&&S.cardCounts[slotKey])||1;
+        const badge=document.createElement('span'); badge.className='mc-badge';
+        badge.textContent=count>=5?'🥇':count>=3?'🥈':'🥉';
+        card.appendChild(badge);
       }
-
-      card.onclick=()=>{
-        if(!S.user){ showModal('authModal'); return; }
-        toggleLight(slotKey);
-      };
+      // 有資料的顯示名稱
+      if(mData&&mData.name){
+        const nm=document.createElement('div'); nm.className='cname'; nm.textContent=mData.name; card.appendChild(nm);
+      }
     } else {
-      // 無圖片：楓葉佔位
+      // 無圖：楓葉 + 加號提示
       card.appendChild(LEAF.cloneNode(true));
-      card.onclick=()=>{ if(!S.user) showModal('authModal'); };
+      const plus=document.createElement('div');
+      plus.style.cssText='position:absolute;bottom:2px;right:3px;font-size:10px;color:rgba(139,100,40,.4)';
+      plus.textContent='+'; card.appendChild(plus);
     }
 
+    // 點格子 → 顯示右頁詳細 + 點選高亮
+    card.onclick=()=>{
+      document.querySelectorAll('.mc').forEach(c=>c.classList.remove('sel'));
+      card.classList.add('sel');
+      showMonsterDetail(slotKey);
+    };
     grid.appendChild(card);
   }
 }
+
 
 
 /* ── DETAIL ── */
@@ -703,8 +768,8 @@ async function deleteEntry(e){
   S.selEntry=null; clearDetail(); toast('已刪除','ok'); loadPlayers();
 }
 
-$('prevBtn').onclick=()=>{ if(S.curPage>0){S.curPage--;S.selEntry=null;clearDetail();renderGrid();} };
-$('nextBtn').onclick=()=>{ if(S.curPage<TAB_PAGES[S.curTab].length-1){S.curPage++;S.selEntry=null;clearDetail();renderGrid();} };
+$('prevBtn').onclick=()=>{ if(S.curPage>0){S.curPage--;S.selEntry=null;clearDetail();renderGrid();subscribeMonsters();} };
+$('nextBtn').onclick=()=>{ if(S.curPage<TAB_PAGES[S.curTab].length-1){S.curPage++;S.selEntry=null;clearDetail();renderGrid();subscribeMonsters();} };
 
 
 /* ── SUBMIT ── */
@@ -875,6 +940,208 @@ document.getElementById('lightConfirmBtn').onclick=async()=>{
   }
 };
 
+
+/* ── PUBLIC MONSTER DATA ── */
+function subscribeMonsters(){
+  if(S.monsterUnsub) S.monsterUnsub();
+  // 訂閱目前頁面的怪物資料
+  const tabPage = S.curTab+'-'+S.curPage;
+  const q = query(collection(db,'monsters'), where('tabPage','==',tabPage));
+  S.monsterUnsub = onSnapshot(q, snap=>{
+    snap.docs.forEach(d=>{
+      S.monsterData[d.id] = {id:d.id,...d.data()};
+    });
+    renderGrid();
+    // 如果右頁正在顯示，更新
+    if(S.currentSlotKey && S.monsterData[S.currentSlotKey]){
+      showMonsterDetail(S.currentSlotKey);
+    }
+  }, ()=>{});
+}
+
+async function openMonsterModal(slotKey){
+  if(!S.user){ showModal('authModal'); return; }
+  S.pendingSlotKey = slotKey;
+  S.pendingB64 = '';
+  const data = S.monsterData[slotKey] || {};
+  const [tab,pg,idx] = slotKey.split('-');
+
+  // 填入現有資料
+  document.getElementById('mName').value = data.name || '';
+  document.getElementById('mLv').value   = data.level || '';
+  document.getElementById('mHp').value   = data.hp    || '';
+  document.getElementById('mExp').value  = data.exp   || '';
+  document.getElementById('mArea').value = data.area  || '';
+  document.getElementById('mImgWarn').classList.add('hidden');
+  document.getElementById('mSizeHint').textContent = '圖片會自動壓縮';
+  document.getElementById('mImg').value = '';
+
+  // 顯示現有圖片
+  if(data.imageB64){
+    document.getElementById('mUPrev').src = data.imageB64;
+    document.getElementById('mUPrev').classList.remove('hidden');
+    document.getElementById('mUPh').classList.add('hidden');
+    document.getElementById('mDeleteImgBtn').classList.remove('hidden');
+  } else {
+    document.getElementById('mUPrev').classList.add('hidden');
+    document.getElementById('mUPh').classList.remove('hidden');
+    document.getElementById('mDeleteImgBtn').classList.add('hidden');
+  }
+
+  // 顯示最後編輯者
+  if(data.lastEditBy){
+    document.getElementById('mLastEdit').textContent = '最後由 '+data.lastEditBy+' 編輯';
+  } else {
+    document.getElementById('mLastEdit').textContent = '';
+  }
+
+  document.getElementById('monsterModalTitle').textContent = '📖 怪物資料 #'+(parseInt(idx)+1);
+  showModal('monsterModal');
+}
+
+function showMonsterDetail(slotKey){
+  S.currentSlotKey = slotKey;
+  const data = S.monsterData[slotKey] || {};
+  const [tab,pg,idx] = slotKey.split('-').map(Number);
+
+  document.getElementById('detailEmpty').classList.add('hidden');
+  document.getElementById('detailBody').classList.remove('hidden');
+
+  document.getElementById('dName').textContent = data.name || '（尚無資料）';
+  document.getElementById('dLv').textContent   = data.level ? 'Lv.'+data.level : '—';
+  document.getElementById('dHp').textContent   = data.hp  ? Number(data.hp).toLocaleString()  : '—';
+  document.getElementById('dExp').textContent  = data.exp ? Number(data.exp).toLocaleString() : '—';
+  document.getElementById('dArea').textContent = data.area || '—';
+  document.getElementById('dCat').textContent  = CATS[tab]||'—';
+
+  const wrap = document.getElementById('dImg'); wrap.innerHTML='';
+  // 優先顯示公共圖，其次 CARD_IMGS
+  const cropKey = (tab+1)+'-'+(pg+1)+'-'+idx;
+  if(data.imageB64){
+    const img=document.createElement('img'); img.src=data.imageB64; wrap.appendChild(img);
+  } else if(CARD_IMGS[cropKey]){
+    const img=document.createElement('img'); img.src=CARD_IMGS[cropKey];
+    img.style.cssText='width:100%;height:100%;object-fit:contain'; wrap.appendChild(img);
+  }
+
+  const avEl = document.getElementById('dAv');
+  const unEl = document.getElementById('dUn');
+  if(data.lastEditBy){
+    avEl.textContent = data.lastEditBy.charAt(0).toUpperCase();
+    unEl.textContent = '最後由 '+data.lastEditBy+' 編輯';
+  } else {
+    avEl.textContent = '?';
+    unEl.textContent = '尚無人填寫資料';
+  }
+
+  // 按鈕
+  const btns = document.getElementById('dBtns'); btns.innerHTML='';
+  if(S.user){
+    const editBtn=document.createElement('button');
+    editBtn.className='btn btn-gold'; editBtn.textContent='✏️ 編輯資料';
+    editBtn.onclick=()=>openMonsterModal(slotKey);
+    btns.appendChild(editBtn);
+
+    const slotKeyLit = tab+'-'+pg+'-'+idx;
+    const isLit = S.litSlots.has(slotKeyLit);
+    const litBtn=document.createElement('button');
+    litBtn.className=isLit?'btn btn-ghost':'btn btn-amber';
+    litBtn.textContent=isLit?'🔘 取消點亮':'✨ 標記已打';
+    litBtn.onclick=()=>toggleLight(slotKeyLit);
+    btns.appendChild(litBtn);
+  }
+}
+
+// Monster modal: 上傳圖片
+document.getElementById('mUploadArea').onclick=()=>document.getElementById('mImg').click();
+document.getElementById('mUploadArea').ondragover=e=>{e.preventDefault();document.getElementById('mUploadArea').classList.add('drag')};
+document.getElementById('mUploadArea').ondragleave=()=>document.getElementById('mUploadArea').classList.remove('drag');
+document.getElementById('mUploadArea').ondrop=e=>{
+  e.preventDefault();document.getElementById('mUploadArea').classList.remove('drag');
+  if(e.dataTransfer.files[0]) handleMonsterFile(e.dataTransfer.files[0]);
+};
+document.getElementById('mImg').onchange=e=>{if(e.target.files[0])handleMonsterFile(e.target.files[0])};
+
+async function handleMonsterFile(file){
+  document.getElementById('mImgWarn').classList.add('hidden');
+  document.getElementById('mSizeHint').textContent='壓縮中...';
+  try{
+    S.pendingB64=await compressImage(file);
+    document.getElementById('mUPrev').src=S.pendingB64;
+    document.getElementById('mUPrev').classList.remove('hidden');
+    document.getElementById('mUPh').classList.add('hidden');
+    document.getElementById('mDeleteImgBtn').classList.remove('hidden');
+    document.getElementById('mSizeHint').textContent='壓縮後約 '+Math.round(S.pendingB64.length/1024)+' KB';
+  }catch(err){
+    document.getElementById('mImgWarn').textContent='⚠️ '+err.message;
+    document.getElementById('mImgWarn').classList.remove('hidden');
+    document.getElementById('mSizeHint').textContent='';
+    S.pendingB64='';
+  }
+}
+
+// 刪除圖片
+document.getElementById('mDeleteImgBtn').onclick=()=>{
+  S.pendingB64='__DELETE__';
+  document.getElementById('mUPrev').classList.add('hidden');
+  document.getElementById('mUPh').classList.remove('hidden');
+  document.getElementById('mDeleteImgBtn').classList.add('hidden');
+  document.getElementById('mSizeHint').textContent='圖片將被刪除';
+};
+
+// 儲存怪物資料
+document.getElementById('mSaveBtn').onclick=async()=>{
+  if(!S.user||!S.pendingSlotKey) return;
+  document.getElementById('mSaveBtn').disabled=true;
+  document.getElementById('mSaveBtn').textContent='儲存中...';
+  try{
+    const slotKey = S.pendingSlotKey;
+    const [tab,pg,idx] = slotKey.split('-').map(Number);
+    const existing = S.monsterData[slotKey] || {};
+
+    let imageB64 = existing.imageB64 || null;
+    if(S.pendingB64==='__DELETE__') imageB64=null;
+    else if(S.pendingB64) imageB64=S.pendingB64;
+
+    await setDoc(doc(db,'monsters',slotKey),{
+      tabPage: tab+'-'+pg,
+      category:tab, page:pg, slot:idx,
+      name:    document.getElementById('mName').value.trim()||null,
+      level:   document.getElementById('mLv').value   ? parseInt(document.getElementById('mLv').value)   : null,
+      hp:      document.getElementById('mHp').value   ? parseInt(document.getElementById('mHp').value)   : null,
+      exp:     document.getElementById('mExp').value  ? parseInt(document.getElementById('mExp').value)  : null,
+      area:    document.getElementById('mArea').value.trim()||null,
+      imageB64,
+      lastEditBy: S.user.displayName,
+      lastEditUid: S.user.uid,
+      updatedAt: serverTimestamp()
+    }, {merge:true});
+
+    // 更新本地快取
+    S.monsterData[slotKey] = {
+      ...existing,
+      name:document.getElementById('mName').value.trim()||null,
+      level:document.getElementById('mLv').value?parseInt(document.getElementById('mLv').value):null,
+      hp:document.getElementById('mHp').value?parseInt(document.getElementById('mHp').value):null,
+      exp:document.getElementById('mExp').value?parseInt(document.getElementById('mExp').value):null,
+      area:document.getElementById('mArea').value.trim()||null,
+      imageB64,
+      lastEditBy:S.user.displayName
+    };
+
+    hideModal('monsterModal');
+    toast('✅ 資料已儲存','ok');
+    S.pendingB64='';
+    renderGrid();
+    showMonsterDetail(slotKey);
+  }catch(err){
+    toast('儲存失敗：'+err.message,'err');
+  }finally{
+    document.getElementById('mSaveBtn').disabled=false;
+    document.getElementById('mSaveBtn').textContent='💾 儲存';
+  }
+};
+
 /* ── LIT SLOTS ── */
 function subscribeLit(){
   if(!S.user) return;
@@ -935,7 +1202,7 @@ async function toggleLight(slotKey){
 
 
 /* ── INIT ── */
-renderGrid(); loadPlayers(); subscribe();
+renderGrid(); loadPlayers(); subscribe(); subscribeMonsters();
 </script>
 </body>
 </html>
