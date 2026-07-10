@@ -25,7 +25,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
 .btn-ghost:hover{background:rgba(245,220,140,.2);color:#f5d87a}
 .btn-amber{background:rgba(200,146,42,.55);color:#1c1410;border:1.5px solid rgba(200,146,42,.8)!important;font-size:9px;padding:3px 9px;font-weight:700}
 .btn-amber:hover{background:rgba(200,146,42,.78);color:#1c1410}
-.btn-danger{background:rgba(180,40,40,.2);color:#e89090;border:1px solid rgba(180,40,40,.4)!important}
+.btn-danger{background:rgba(180,40,40,.75);color:#fff;border:1.5px solid rgba(180,40,40,.9)!important;font-weight:700}
+.btn-danger:hover{background:rgba(180,40,40,.95);color:#fff}
 .btn-danger:hover{background:rgba(180,40,40,.35);color:#ffb0b0}
 
 .pbar{background:#241c12;height:34px;padding:0 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(139,105,20,.3);flex-shrink:0}
@@ -184,6 +185,15 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
 .form-actions .btn{flex:1;padding:10px;font-size:11px}
 /* 徽章顯示在格子上 */
 .mc-badge{position:absolute;top:2px;right:3px;font-size:11px;line-height:1;z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+
+.edit-panel-btn{background:none;border:none;cursor:pointer;font-size:13px;opacity:.6;transition:opacity .18s;padding:0 2px}
+.edit-panel-btn:hover{opacity:1}
+.prize-editor{display:flex;flex-direction:column;gap:5px;padding:8px;border:1px solid rgba(139,100,40,.2);border-radius:6px;background:rgba(139,100,40,.05);margin-bottom:6px}
+.prize-editor-row{display:flex;gap:6px;align-items:center}
+.pe-label{font-family:'Cinzel',serif;font-size:9px;color:#8b6030;width:32px;flex-shrink:0}
+.score-editor{display:flex;gap:6px;align-items:center;padding:5px 7px;border:1px solid rgba(139,100,40,.15);border-radius:4px;background:rgba(139,100,40,.05);margin-bottom:4px}
+.se-label{font-family:'Cinzel',serif;font-size:9px;color:#5c3a18;flex:1}
+.se-input{width:60px;padding:3px 6px;border:1px solid rgba(139,100,40,.3);border-radius:3px;font-family:'Cinzel',serif;font-size:10px;text-align:center;background:#fff;color:#3b2610}
 </style>
 </head>
 <body>
@@ -213,54 +223,12 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
 
   <!-- LEFT: 活動獎勵 -->
   <div class="side">
-    <div class="ph"><div class="pt">🏆 活動獎勵</div></div>
-    <div class="pb">
-      <div class="prizes">
-        <div class="prow">
-          <div class="pmed">🥇</div>
-          <div><div class="prank">第一名</div><div class="pdet">突襲券 30張<br>傳送石 100顆</div></div>
-        </div>
-        <div class="prow">
-          <div class="pmed">🥈</div>
-          <div><div class="prank">第二名</div><div class="pdet">突襲券 20張<br>傳送石 60顆</div></div>
-        </div>
-        <div class="prow">
-          <div class="pmed">🥉</div>
-          <div><div class="prank">第三名</div><div class="pdet">突襲券 15張<br>傳送石 40顆</div></div>
-        </div>
-      </div>
-      <div class="stitle">📊 計分方式</div>
-      <div class="srows">
-        <div class="srow">
-          <div>
-            <div class="slbl">🥇 金牌（5張卡）</div>
-            <div class="scum">累計：10・18・29・37・50</div>
-          </div>
-          <div class="spts">+10分</div>
-        </div>
-        <div class="srow">
-          <div><div class="slbl">🥈 銀牌（3張卡）</div></div>
-          <div class="spts">+5分</div>
-        </div>
-        <div class="srow">
-          <div><div class="slbl">🥉 銅牌（1張卡）</div></div>
-          <div class="spts">+2分</div>
-        </div>
-        <div class="srow">
-          <div>
-            <div class="slbl">👑 野王BOSS</div>
-            <div class="scum">累計：10・18・29・37・50</div>
-          </div>
-          <div class="spts">+8分</div>
-        </div>
-        <div class="srow">
-          <div>
-            <div class="slbl">⚔️ 突襲BOSS</div>
-            <div class="scum">累計：17・32・50・65・85</div>
-          </div>
-          <div class="spts">+15分</div>
-        </div>
-      </div>
+    <div class="ph" style="display:flex;align-items:center;justify-content:space-between">
+      <div class="pt">🏆 活動獎勵</div>
+      <button class="edit-panel-btn hidden" id="editActivityBtn" onclick="showModal('activityModal')" title="編輯">✏️</button>
+    </div>
+    <div class="pb" id="activityPanel">
+      <div class="rempty" style="padding:20px 0">載入中...</div>
     </div>
   </div>
 
@@ -322,10 +290,25 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
 
   <!-- RIGHT: 排行榜 -->
   <div class="side">
-    <div class="ph"><div class="pt">🏅 圖鑑排行榜</div></div>
+    <div class="ph" style="display:flex;align-items:center;justify-content:space-between">
+      <div class="pt">🏅 圖鑑排行榜</div>
+      <button class="edit-panel-btn" id="unlockRankBtn" onclick="showModal('unlockModal')" title="解鎖排行榜">🔒</button>
+    </div>
     <div class="pb">
-      <div class="rlist" id="rankList">
-        <div class="rempty">登入後開始計分</div>
+      <!-- 蓋牌狀態 -->
+      <div id="rankCover" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;padding:24px 0;text-align:center">
+        <div style="font-size:48px">🔒</div>
+        <div style="font-family:'Cinzel',serif;font-size:11px;color:#8b7040;letter-spacing:.4px;line-height:1.8">排行榜已封鎖<br>輸入管理員密碼解鎖</div>
+        <button class="btn btn-gold" style="font-size:11px;padding:8px 16px" onclick="showModal('unlockModal')">解鎖排行榜</button>
+      </div>
+      <!-- 排行榜（解鎖後顯示） -->
+      <div id="rankContent" class="hidden">
+        <div class="rlist" id="rankList">
+          <div class="rempty">登入後開始計分</div>
+        </div>
+        <div style="text-align:center;margin-top:10px">
+          <button class="btn btn-ghost" style="font-size:9px;padding:3px 10px" onclick="lockRank()">🔒 重新蓋牌</button>
+        </div>
       </div>
     </div>
   </div>
@@ -420,6 +403,41 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
   </div>
 </div>
 
+
+<!-- MODAL: 解鎖排行榜 -->
+<div class="overlay hidden" id="unlockModal">
+  <div class="modal modal-sm" style="max-width:340px;text-align:center">
+    <button class="modal-close" onclick="hideModal('unlockModal')">✕</button>
+    <div class="modal-title">🔒 解鎖排行榜</div>
+    <div class="modal-sub">輸入管理員密碼</div>
+    <input type="password" id="rankPw" class="fi" placeholder="輸入密碼" style="text-align:center;letter-spacing:4px;font-size:16px"/>
+    <div class="errmsg hidden" id="rankPwErr" style="text-align:center;margin-top:6px"></div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="hideModal('unlockModal')">取消</button>
+      <button class="btn btn-gold" onclick="doUnlockRank()">解鎖</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: 編輯活動資料 -->
+<div class="overlay hidden" id="activityModal">
+  <div class="modal modal-md">
+    <button class="modal-close" onclick="hideModal('activityModal')">✕</button>
+    <div class="modal-title">✏️ 編輯活動資料</div>
+
+    <div class="stitle" style="margin-top:0;padding-top:0;border-top:none">🏆 獎勵設定</div>
+    <div id="prizeEditors"></div>
+
+    <div class="stitle">📊 計分方式</div>
+    <div id="scoreEditors"></div>
+
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="hideModal('activityModal')">取消</button>
+      <button class="btn btn-gold" id="saveActivityBtn" onclick="saveActivity()">💾 儲存</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: AUTH -->
 <div class="overlay hidden" id="authModal">
   <div class="modal modal-sm">
@@ -508,7 +526,6 @@ function calcScore(entryCount) {
 }
 
 /* ── MODAL ── */
-window.showModal = id => $(id).classList.remove('hidden');
 window.hideModal = id => $(id).classList.add('hidden');
 document.querySelectorAll('.overlay').forEach(o => o.onclick=e=>{ if(e.target===o) o.classList.add('hidden'); });
 window.switchTab = mode => {
@@ -546,6 +563,7 @@ function onLoggedIn(user){
   $('myBtn').classList.remove('hidden');
   loadPlayers();
   subscribeLit();
+  renderActivity();
 }
 
 /* ── LOGIN ── */
@@ -583,7 +601,7 @@ window.doRegister = async () => {
 };
 
 /* ── LOGOUT ── */
-$('logoutBtn').onclick=()=>{ S.user=null; clearSession(); S.litSlots=new Set(); if(S.litUnsub){S.litUnsub();S.litUnsub=null;} $('loginBtn').classList.remove('hidden'); $('userInfo').classList.add('hidden'); toast('已登出'); renderGrid(); };
+$('logoutBtn').onclick=()=>{ S.user=null; clearSession(); S.litSlots=new Set(); if(S.litUnsub){S.litUnsub();S.litUnsub=null;} $('loginBtn').classList.remove('hidden'); $('userInfo').classList.add('hidden'); toast('已登出'); renderGrid(); renderActivity(); };
 $('loginBtn').onclick=()=>showModal('authModal');
 (()=>{ const s=loadSession(); if(s){ onLoggedIn(s); subscribeLit(); } })();
 
@@ -1054,7 +1072,7 @@ function showMonsterDetail(slotKey){
     const slotKeyLit = tab+'-'+pg+'-'+idx;
     const isLit = S.litSlots.has(slotKeyLit);
     const litBtn=document.createElement('button');
-    litBtn.className=isLit?'btn btn-ghost':'btn btn-gold';
+    litBtn.className=isLit?'btn btn-danger':'btn btn-gold';
     litBtn.textContent=isLit?'🔘 取消點亮':'✨ 標記已打';
     litBtn.onclick=()=>toggleLight(slotKeyLit);
     btns.appendChild(litBtn);
@@ -1210,8 +1228,136 @@ async function toggleLight(slotKey){
 
 
 
+
+/* ── ACTIVITY & RANKING ── */
+const ADMIN_PW = 'handbook';
+const DEFAULT_ACTIVITY = {
+  prizes: [
+    { rank:'第一名', medal:'🥇', items:'突襲券 30張\n傳送石 100顆' },
+    { rank:'第二名', medal:'🥈', items:'突襲券 20張\n傳送石 60顆' },
+    { rank:'第三名', medal:'🥉', items:'突襲券 15張\n傳送石 40顆' },
+  ],
+  scores: [
+    { label:'🥇 金牌（5張卡）', pts:10, note:'累計：10・18・29・37・50' },
+    { label:'🥈 銀牌（3張卡）', pts:5,  note:'' },
+    { label:'🥉 銅牌（1張卡）', pts:2,  note:'' },
+    { label:'👑 野王BOSS',      pts:8,  note:'累計：10・18・29・37・50' },
+    { label:'⚔️ 突襲BOSS',     pts:15, note:'累計：17・32・50・65・85' },
+  ]
+};
+
+let activityData = JSON.parse(JSON.stringify(DEFAULT_ACTIVITY));
+
+// 載入活動資料
+async function loadActivity(){
+  try{
+    const snap = await getDoc(doc(db,'settings','activity'));
+    if(snap.exists()) activityData = snap.data();
+    else activityData = JSON.parse(JSON.stringify(DEFAULT_ACTIVITY));
+  }catch(e){ activityData = JSON.parse(JSON.stringify(DEFAULT_ACTIVITY)); }
+  renderActivity();
+}
+
+// 渲染活動面板（左側）
+function renderActivity(){
+  const panel = document.getElementById('activityPanel');
+  if(!panel) return;
+  let html = '<div class="prizes">';
+  activityData.prizes.forEach(p=>{
+    html += `<div class="prow"><div class="pmed">${p.medal}</div><div><div class="prank">${p.rank}</div><div class="pdet">${p.items.replace(/\n/g,'<br>')}</div></div></div>`;
+  });
+  html += '</div><div class="stitle">📊 計分方式</div><div class="srows">';
+  activityData.scores.forEach(s=>{
+    html += `<div class="srow"><div><div class="slbl">${s.label}</div>${s.note?`<div class="scum">${s.note}</div>`:''}</div><div class="spts">+${s.pts}分</div></div>`;
+  });
+  html += '</div>';
+  panel.innerHTML = html;
+  // 顯示編輯按鈕（登入者）
+  const editBtn = document.getElementById('editActivityBtn');
+  if(editBtn) editBtn.classList.toggle('hidden', !S.user);
+}
+
+// 開啟編輯 Modal，動態生成表單
+window.showModal = id => {
+  document.getElementById(id).classList.remove('hidden');
+  if(id === 'activityModal') buildActivityEditors();
+};
+
+function buildActivityEditors(){
+  // 獎勵編輯器
+  const pe = document.getElementById('prizeEditors');
+  pe.innerHTML = '';
+  activityData.prizes.forEach((p,i)=>{
+    pe.innerHTML += `
+      <div class="prize-editor">
+        <div class="prize-editor-row">
+          <span class="pe-label">${p.medal} 名次</span>
+          <input class="fi" style="flex:1;padding:5px 8px;font-size:11px" value="${p.rank}" oninput="activityData.prizes[${i}].rank=this.value"/>
+        </div>
+        <div class="prize-editor-row">
+          <span class="pe-label">獎品</span>
+          <textarea class="fi" rows="2" style="flex:1;padding:5px 8px;font-size:11px;resize:vertical" oninput="activityData.prizes[${i}].items=this.value">${p.items}</textarea>
+        </div>
+      </div>`;
+  });
+  // 計分編輯器
+  const se = document.getElementById('scoreEditors');
+  se.innerHTML = '';
+  activityData.scores.forEach((s,i)=>{
+    se.innerHTML += `
+      <div class="score-editor">
+        <span class="se-label">${s.label}</span>
+        <input class="se-input" type="number" value="${s.pts}" min="0" oninput="activityData.scores[${i}].pts=parseInt(this.value)||0" title="分數"/>
+        <span style="font-family:'Cinzel',serif;font-size:9px;color:#8b6030">分</span>
+      </div>`;
+  });
+}
+
+// 儲存活動資料
+window.saveActivity = async function(){
+  const btn = document.getElementById('saveActivityBtn');
+  btn.disabled=true; btn.textContent='儲存中...';
+  try{
+    await setDoc(doc(db,'settings','activity'), activityData);
+    hideModal('activityModal');
+    renderActivity();
+    toast('✅ 活動資料已更新','ok');
+  }catch(e){ toast('儲存失敗：'+e.message,'err'); }
+  finally{ btn.disabled=false; btn.textContent='💾 儲存'; }
+};
+
+// 排行榜解鎖
+window.doUnlockRank = function(){
+  const pw = document.getElementById('rankPw').value;
+  const err = document.getElementById('rankPwErr');
+  if(pw === ADMIN_PW){
+    document.getElementById('rankCover').style.display='none';
+    document.getElementById('rankContent').classList.remove('hidden');
+    document.getElementById('unlockRankBtn').textContent='🔓';
+    hideModal('unlockModal');
+    document.getElementById('rankPw').value='';
+    err.classList.add('hidden');
+    toast('排行榜已解鎖','ok');
+  } else {
+    err.textContent='密碼錯誤';
+    err.classList.remove('hidden');
+  }
+};
+
+window.lockRank = function(){
+  document.getElementById('rankCover').style.display='flex';
+  document.getElementById('rankContent').classList.add('hidden');
+  document.getElementById('unlockRankBtn').textContent='🔒';
+  toast('排行榜已蓋牌');
+};
+
+// Enter 鍵解鎖
+document.getElementById('rankPw').addEventListener('keydown', e=>{
+  if(e.key==='Enter') doUnlockRank();
+});
+
 /* ── INIT ── */
-renderGrid(); loadPlayers(); subscribe(); subscribeMonsters();
+renderGrid(); loadPlayers(); subscribe(); subscribeMonsters(); loadActivity();
 </script>
 </body>
 </html>
