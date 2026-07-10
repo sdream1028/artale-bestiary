@@ -155,6 +155,35 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
 .toast.err{background:#3a1414;color:#e88080;border-color:rgba(180,60,60,.4)}
 @keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 .hidden{display:none!important}
+
+/* ── LIGHT MODAL ── */
+.card-count-row{display:flex;gap:6px;margin-top:8px}
+.card-count-btn{
+  flex:1;padding:8px 4px;border-radius:6px;cursor:pointer;
+  border:1.5px solid rgba(139,100,40,.3);
+  background:rgba(139,100,40,.08);
+  font-family:'Cinzel',serif;font-size:10px;
+  color:#8b6030;text-align:center;line-height:1.6;
+  transition:all .18s;
+}
+.card-count-btn:hover{border-color:#c8922a;background:rgba(200,146,42,.12);color:#c8922a}
+.card-count-btn.active{
+  border-color:#c8922a;background:linear-gradient(135deg,rgba(200,146,42,.2),rgba(232,184,64,.15));
+  color:#c8922a;font-weight:700;
+  box-shadow:0 0 0 2px rgba(200,146,42,.25);
+}
+.card-medal{font-size:14px}
+.upload-area{border:2px dashed rgba(139,100,40,.32);border-radius:8px;min-height:95px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .18s,background .18s;overflow:hidden;background:rgba(139,100,40,.05);margin-top:8px}
+.upload-area:hover,.upload-area.drag{border-color:#c8922a;background:rgba(200,146,42,.07)}
+.uph{text-align:center;color:#8b7040;padding:14px}
+.uph-icon{font-size:24px;display:block;margin-bottom:5px}
+.uph-txt{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.3px}
+.uprev{width:100%;max-height:160px;object-fit:contain}
+.size-hint{font-family:'Cinzel',serif;font-size:9px;color:#a09060;margin-top:4px;letter-spacing:.2px}
+.form-actions{display:flex;gap:8px;margin-top:18px}
+.form-actions .btn{flex:1;padding:10px;font-size:11px}
+/* 徽章顯示在格子上 */
+.mc-badge{position:absolute;top:2px;right:3px;font-size:11px;line-height:1;z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
 </style>
 </head>
 <body>
@@ -309,6 +338,47 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
   <div class="si">圖鑑王 <span id="topPlayer" class="sv">—</span></div>
 </div>
 
+
+<!-- MODAL: 點亮 -->
+<div class="overlay hidden" id="lightModal">
+  <div class="modal modal-sm">
+    <button class="modal-close" onclick="hideModal('lightModal')">✕</button>
+    <div class="modal-title" id="lightModalTitle">✨ 點亮怪物</div>
+
+    <!-- 卡片數量選擇 -->
+    <div class="fg fg0">
+      <label class="flbl">目前擁有幾張卡？</label>
+      <div class="card-count-row" id="cardCountRow">
+        <button class="card-count-btn active" data-count="1">1張<br><span class="card-medal">🥉</span></button>
+        <button class="card-count-btn" data-count="2">2張<br><span class="card-medal">—</span></button>
+        <button class="card-count-btn" data-count="3">3張<br><span class="card-medal">🥈</span></button>
+        <button class="card-count-btn" data-count="4">4張<br><span class="card-medal">—</span></button>
+        <button class="card-count-btn" data-count="5">5張<br><span class="card-medal">🥇</span></button>
+      </div>
+    </div>
+
+    <!-- 圖片上傳 -->
+    <div class="fg">
+      <label class="flbl">怪物圖片（選填）</label>
+      <div class="upload-area" id="lightUploadArea">
+        <input type="file" id="lightImg" accept="image/*" hidden/>
+        <div id="lightUPh" class="uph">
+          <span class="uph-icon">📷</span>
+          <div class="uph-txt">點擊或拖曳上傳</div>
+        </div>
+        <img id="lightUPrev" class="uprev hidden" alt=""/>
+      </div>
+      <div class="size-hint" id="lightSizeHint">圖片會自動壓縮</div>
+      <div class="errmsg hidden" id="lightImgWarn"></div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="hideModal('lightModal')">取消</button>
+      <button id="lightConfirmBtn" class="btn btn-gold">✨ 確認點亮</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: AUTH -->
 <div class="overlay hidden" id="authModal">
   <div class="modal modal-sm">
@@ -377,29 +447,8 @@ const TAB_PAGES = [[25],[25,25],[25,25,25,11],[25,25,6],[25,15],[25,1],[18],[5],
 const MAX_B64 = 700*1024;
 const $ = id => document.getElementById(id);
 const LEAF = document.getElementById('leafTpl').content;
-const S = { user:null, curTab:0, curPage:0, selEntry:null, viewPid:null, entries:[], players:[], unsub:null, litSlots:new Set(), litUnsub:null };
+const S = { user:null, curTab:0, curPage:0, selEntry:null, viewPid:null, entries:[], players:[], unsub:null, litSlots:new Set(), litUnsub:null, cardCounts:{}, pendingSlotKey:null, pendingB64:'', selectedCount:1 };
 
-/* ── COMPRESS IMAGE ── */
-function compressImage(file) {
-  return new Promise((resolve, reject) => {
-    const img = new Image(), url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      let w=img.width, h=img.height;
-      const MAX=800;
-      if(w>MAX||h>MAX){ const r=Math.min(MAX/w,MAX/h); w=Math.round(w*r); h=Math.round(h*r); }
-      const canvas=document.createElement('canvas');
-      canvas.width=w; canvas.height=h;
-      canvas.getContext('2d').drawImage(img,0,0,w,h);
-      let q=0.85, b64='';
-      do{ b64=canvas.toDataURL('image/jpeg',q); q-=0.1; } while(b64.length>MAX_B64&&q>0.1);
-      if(b64.length>MAX_B64){ reject(new Error('圖片太大，請換一張')); return; }
-      resolve(b64);
-    };
-    img.onerror=()=>reject(new Error('圖片讀取失敗'));
-    img.src=url;
-  });
-}
 
 /* ── SCORE CALC ── */
 function calcScore(entryCount) {
@@ -453,7 +502,6 @@ function onLoggedIn(user){
   const ui=$('userInfo'); ui.classList.remove('hidden'); ui.style.display='flex';
   $('userAv').textContent=user.displayName.charAt(0).toUpperCase();
   $('userName').textContent=user.displayName;
-  $('addEntryBtn').classList.remove('hidden');
   $('myBtn').classList.remove('hidden');
   loadPlayers();
   subscribeLit();
@@ -658,52 +706,8 @@ async function deleteEntry(e){
 $('prevBtn').onclick=()=>{ if(S.curPage>0){S.curPage--;S.selEntry=null;clearDetail();renderGrid();} };
 $('nextBtn').onclick=()=>{ if(S.curPage<TAB_PAGES[S.curTab].length-1){S.curPage++;S.selEntry=null;clearDetail();renderGrid();} };
 
-/* ── UPLOAD ── */
-let pendingB64='';
-$('uploadArea').onclick=()=>$('iImg').click();
-$('uploadArea').ondragover=e=>{e.preventDefault();$('uploadArea').classList.add('drag')};
-$('uploadArea').ondragleave=()=>$('uploadArea').classList.remove('drag');
-$('uploadArea').ondrop=e=>{e.preventDefault();$('uploadArea').classList.remove('drag');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])};
-$('iImg').onchange=e=>{if(e.target.files[0])handleFile(e.target.files[0])};
-async function handleFile(file){
-  $('imgWarn').classList.add('hidden'); $('sizeHint').textContent='壓縮中...';
-  try{
-    pendingB64=await compressImage(file);
-    $('uPrev').src=pendingB64; $('uPrev').classList.remove('hidden'); $('uPh').classList.add('hidden');
-    $('sizeHint').textContent=`壓縮後約 ${Math.round(pendingB64.length/1024)} KB`;
-  }catch(err){ $('imgWarn').textContent='⚠️ '+err.message; $('imgWarn').classList.remove('hidden'); $('sizeHint').textContent=''; pendingB64=''; }
-}
 
 /* ── SUBMIT ── */
-$('submitBtn').onclick=async()=>{
-  if(!S.user) return;
-  const name=$('iName').value.trim();
-  if(!name){ toast('請輸入怪物名稱','err'); return; }
-  $('submitBtn').disabled=true; $('submitBtn').textContent='新增中...';
-  try{
-    const cat=parseInt($('iCat').value);
-    await addDoc(collection(db,'entries'),{
-      name, category:cat,
-      level:$('iLv').value?parseInt($('iLv').value):null,
-      hp:$('iHp').value?parseInt($('iHp').value):null,
-      exp:$('iExp').value?parseInt($('iExp').value):null,
-      area:$('iArea').value.trim()||null,
-      imageB64:pendingB64||null,
-      playerId:S.user.uid, playerName:S.user.displayName,
-      createdAt:serverTimestamp()
-    });
-    await updateDoc(doc(db,'players',S.user.uid),{entryCount:increment(1)});
-    hideModal('addModal');
-    ['iName','iLv','iHp','iExp','iArea'].forEach(id=>$(id).value='');
-    $('iImg').value=''; pendingB64='';
-    $('uPrev').classList.add('hidden'); $('uPh').classList.remove('hidden');
-    $('sizeHint').textContent='圖片會自動壓縮至適當大小';
-    toast('✅ 新增成功！','ok');
-    if(cat!==S.curTab){ S.curTab=cat; S.curPage=0; document.querySelectorAll('.stab').forEach(t=>t.classList.toggle('on',parseInt(t.dataset.tab)===cat)); }
-    loadPlayers(); subscribe();
-  }catch(err){ toast('新增失敗：'+err.message,'err'); console.error(err); }
-  finally{ $('submitBtn').disabled=false; $('submitBtn').textContent='確認新增'; }
-};
 
 const CARD_IMGS = {
   "1-1-0": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAACYCAYAAAASskw2AAAFc0lEQVR42u2dwXHzNhSEqYxzywUt0BVkqHRAl0Bfcs1QJVAliCWI91zEEswSzEkFRgnGMYdkRjklM1iIgPhbv2NS394oSiDFnberh/cAbbIsO2fgy+AHHgGEAAhZDh7OZyyECAEQAiHg2zxEX+ifnngq/wOqlxciBMkCELJ4Dwm0Lc95St8BvbVECJIFIARCAIRACIAQCAEQAiAEQgCEQAiAEAgBEAIhAEIAhEAIgBAIARACIQBCIARACIAQCAEQAiHgFnjgEVwH55x/LOcfh8F/wRgdwDss5HxFhCBZAEJW6CEucd469yk3mqsmf7JHPI9j9HxxaKLndXw7jEQIkgUg5O7ykE60dJip7da6qzTcZP64jSyXr4ripp6hHmHle9WHg+9pcn0n32uwMp64ijNECJIFIGT9HqKekVWVd/jSNDM95PLr7b6L5jetlbkiua+Up+h4e7kR09Te8amuZQB9Lr3vGZqnaH7mghsiQpAsACGr95BWtO5dPKNtW5F2X0sL0fayrC5ep6r913e7nXzOv+6u8/eGTO3rNYpnWHn/sW6iGr8ffI8bg7ko9QRDhCBZAELu3kNUG/ve//3ddb62NuIxg9Sa9fhf1PXRV+Bgjiw+15XKO/rgepJnaJ7StwnPSMA4IgTJAhByfx6SqJFrXnE8HiVfKP38oCrFg6a02MhtuGh+4xLV/qCmLZ5UyH223dw8I4vmLcFzVMubqCMRIUgWgJAFYXOWP6Hqt9uotve5f3w6nW5yI/u9/7t/6AeRaH8u6lTkUYneiYbnkh/lMpfVdq14gk14q1FzjXuOfn7wxz+/vxEhSBaAkOXnIYJSPEO19Un+s6ppDtHxpuaydE5MoZ6h6ytsojfXyOc1r5mqcU95himLeJYyytyb3K/LyUOQLAAh6/cQVccysXbuWTxF55ymaur6ugs0PZ4XBO1eifu0QYNYoo9K8pbQM2z0+u7KdTRECJIFIGTJHhKujYsPoPnAq/w+1//rm6qGVNIz3HV+FfxJ6hOal+xU8qXeYUXjXSrvCOoZJuE5cizPIdP6iqO3F8kCEHIPecjHoD2343h5Lqvv/ffVVS15g/+5Z/GmUtYA6tzWODGHdq1HGF0j6BLmO1oiBMkCEIKH3BjFRD/SoGsIMz8vKUvfU7qhjYp4IfUGO87MM3TuSue+jKxHCepGIxGCZAEIuUMPuc1auWvzkv88RPcakT6ssqjkZ77suSI1+VLymFJ6jIPafqoX12bz3m/yxJNgLgvJAhCyQg9JWsj32WMxuGywnkP2uXW+R5hBatiD1NDNIGmG5BnxEnyWFZpnJOohWcJzqIcgWQBCVpmH+HhM1RESeLt2b0TtzZU8RNMXXetoMvGEoA9L9rcadM3iqCb2MRfUPSSdIUKQLAAha0OwxnCz2XhvkNPzLyDjTXmKThXtpP5wkPXw2scllhOUtPW89vZqD/Iw9GIJ46w8qshLOS6iHnk81UQIkgUgZHEekmXZOeYZ6gFzce14r0V8zd7OxvucGunLqqQeMjMNujBll9pbxT+/lfX+JrFe5f38ToQgWQBCFu8hKW1PYav7Wv3lD29+3NzkOorO6h6L7lMfpM5UnRL7CA/iIc0be50gWQBCIARAyKrwoJl09/i4yC9SS/d5nZkvfb+GCEGyAISswEPCl+K74mwTs66pzPx1KoN17s4ePZ2LSBaAkPV5iCqbeoZ14hE/Zd/mGXcOR4QgWQBCVughe6m8/f6H7xm5iXeh4BkfMxEiBMkCELIkD9FOQvWMX3+e17mYmuvCe4gQCAEQst48RKGeovjz73kX/O2Xy5403F09hAiBEAAhi0ey+/2z8NHVvkQIgBAIAffrIYAI+ZL4BxXYAln6lemJAAAAAElFTkSuQmCC",
@@ -772,6 +776,105 @@ const CARD_IMGS = {
 };
 
 
+
+/* ── COMPRESS IMAGE ── */
+function compressImage(file){
+  return new Promise((resolve,reject)=>{
+    const img=new Image(), url=URL.createObjectURL(file);
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      let w=img.width, h=img.height;
+      const MAX=800;
+      if(w>MAX||h>MAX){const r=Math.min(MAX/w,MAX/h);w=Math.round(w*r);h=Math.round(h*r);}
+      const canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      let q=0.85,b64='';
+      do{b64=canvas.toDataURL('image/jpeg',q);q-=0.1;}while(b64.length>700*1024&&q>0.1);
+      if(b64.length>700*1024){reject(new Error('圖片太大'));return;}
+      resolve(b64);
+    };
+    img.onerror=()=>reject(new Error('讀取失敗'));
+    img.src=url;
+  });
+}
+
+/* ── LIGHT MODAL LOGIC ── */
+// 卡片數量按鈕
+document.querySelectorAll('.card-count-btn').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('.card-count-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    S.selectedCount = parseInt(btn.dataset.count);
+  };
+});
+
+// 上傳圖片
+document.getElementById('lightUploadArea').onclick=()=>document.getElementById('lightImg').click();
+document.getElementById('lightUploadArea').ondragover=e=>{e.preventDefault();document.getElementById('lightUploadArea').classList.add('drag')};
+document.getElementById('lightUploadArea').ondragleave=()=>document.getElementById('lightUploadArea').classList.remove('drag');
+document.getElementById('lightUploadArea').ondrop=e=>{
+  e.preventDefault();document.getElementById('lightUploadArea').classList.remove('drag');
+  if(e.dataTransfer.files[0]) handleLightFile(e.dataTransfer.files[0]);
+};
+document.getElementById('lightImg').onchange=e=>{if(e.target.files[0])handleLightFile(e.target.files[0])};
+
+async function handleLightFile(file){
+  document.getElementById('lightImgWarn').classList.add('hidden');
+  document.getElementById('lightSizeHint').textContent='壓縮中...';
+  try{
+    S.pendingB64 = await compressImage(file);
+    document.getElementById('lightUPrev').src=S.pendingB64;
+    document.getElementById('lightUPrev').classList.remove('hidden');
+    document.getElementById('lightUPh').classList.add('hidden');
+    document.getElementById('lightSizeHint').textContent='壓縮後約 '+Math.round(S.pendingB64.length/1024)+' KB';
+  }catch(err){
+    document.getElementById('lightImgWarn').textContent='⚠️ '+err.message;
+    document.getElementById('lightImgWarn').classList.remove('hidden');
+    document.getElementById('lightSizeHint').textContent='';
+    S.pendingB64='';
+  }
+}
+
+// 確認點亮
+document.getElementById('lightConfirmBtn').onclick=async()=>{
+  if(!S.user||!S.pendingSlotKey) return;
+  document.getElementById('lightConfirmBtn').disabled=true;
+  document.getElementById('lightConfirmBtn').textContent='儲存中...';
+  try{
+    const slotKey=S.pendingSlotKey;
+    const [tab,pg,idx]=slotKey.split('-').map(Number);
+    const cardCount=S.selectedCount||1;
+
+    // 存到 litSlots（含卡片數）
+    const litRef=doc(db,'litSlots',S.user.uid);
+    const update={};
+    update[slotKey]=cardCount; // 存數字而非 boolean
+    await setDoc(litRef,update,{merge:true});
+    S.litSlots.add(slotKey);
+    S.cardCounts=S.cardCounts||{};
+    S.cardCounts[slotKey]=cardCount;
+
+    // 存 entry（含圖片）
+    await setDoc(doc(db,'entries',S.user.uid+'_'+slotKey),{
+      category:tab, page:pg, slot:idx,
+      playerId:S.user.uid, playerName:S.user.displayName,
+      cardCount, imageB64:S.pendingB64||null,
+      createdAt:serverTimestamp()
+    });
+
+    hideModal('lightModal');
+    toast('✨ 點亮！('+cardCount+'張)','ok');
+    S.pendingB64='';
+    renderGrid();
+  }catch(err){
+    toast('儲存失敗：'+err.message,'err');
+  }finally{
+    document.getElementById('lightConfirmBtn').disabled=false;
+    document.getElementById('lightConfirmBtn').textContent='✨ 確認點亮';
+  }
+};
+
 /* ── LIT SLOTS ── */
 function subscribeLit(){
   if(!S.user) return;
@@ -779,27 +882,56 @@ function subscribeLit(){
   const litRef = doc(db,'litSlots',S.user.uid);
   S.litUnsub = onSnapshot(litRef, snap => {
     const data = snap.exists() ? snap.data() : {};
-    S.litSlots = new Set(Object.keys(data).filter(k=>data[k]===true));
+    S.litSlots = new Set();
+    S.cardCounts = {};
+    Object.keys(data).forEach(k=>{
+      const v = data[k];
+      if(v && v !== false){
+        S.litSlots.add(k);
+        S.cardCounts[k] = typeof v === 'number' ? v : 1;
+      }
+    });
     renderGrid();
   });
 }
 
 async function toggleLight(slotKey){
   if(!S.user){ showModal('authModal'); return; }
-  const litRef = doc(db,'litSlots',S.user.uid);
   const isLit = S.litSlots.has(slotKey);
-  const update = {};
-  update[slotKey] = !isLit;
-  await setDoc(litRef, update, {merge:true});
   if(isLit){
+    // 再點一次 → 取消點亮
+    if(!confirm('確定取消點亮此格？')) return;
+    const litRef = doc(db,'litSlots',S.user.uid);
+    const update = {}; update[slotKey] = false;
+    await setDoc(litRef, update, {merge:true});
+    // 也刪除此格的 entry
+    try{ await deleteDoc(doc(db,'entries',S.user.uid+'_'+slotKey)); }catch(e){}
     S.litSlots.delete(slotKey);
+    S.cardCounts = S.cardCounts || {};
+    delete S.cardCounts[slotKey];
     toast('已取消點亮');
+    renderGrid();
   } else {
-    S.litSlots.add(slotKey);
-    toast('✨ 點亮！','ok');
+    // 第一次點 → 開啟點亮視窗
+    S.pendingSlotKey = slotKey;
+    S.pendingB64 = '';
+    S.selectedCount = 1;
+    // 重置 modal UI
+    document.querySelectorAll('.card-count-btn').forEach(b=>{
+      b.classList.toggle('active', parseInt(b.dataset.count)===1);
+    });
+    document.getElementById('lightUPrev').classList.add('hidden');
+    document.getElementById('lightUPh').classList.remove('hidden');
+    document.getElementById('lightImgWarn').classList.add('hidden');
+    document.getElementById('lightSizeHint').textContent='圖片會自動壓縮';
+    document.getElementById('lightImg').value='';
+    // 從 CARD_IMGS 取得格子的怪物名稱（用 cropKey）
+    const [tab,pg,idx] = slotKey.split('-');
+    const cropKey = (parseInt(tab)+1)+'-'+(parseInt(pg)+1)+'-'+idx;
+    showModal('lightModal');
   }
-  renderGrid();
 }
+
 
 
 /* ── INIT ── */
