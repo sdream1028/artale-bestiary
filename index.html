@@ -1390,14 +1390,18 @@ async function toggleLight(slotKey){
 /* ── ACTIVITY & RANKING ── */
 const ADMIN_PW = 'handbook';
 
-// 載入活動資料
-async function loadActivity(){
-  try{
-    const snap = await getDoc(doc(db,'settings','activity'));
+// 即時監聽活動資料（所有人編輯後大家立刻看到）
+function loadActivity(){
+  const actRef = doc(db,'settings','activity');
+  onSnapshot(actRef, snap=>{
     if(snap.exists()) activityData = snap.data();
     else activityData = JSON.parse(JSON.stringify(DEFAULT_ACTIVITY));
-  }catch(e){ activityData = JSON.parse(JSON.stringify(DEFAULT_ACTIVITY)); }
-  renderActivity();
+    renderActivity();
+  }, e=>{
+    // 連線失敗時用預設值
+    activityData = JSON.parse(JSON.stringify(DEFAULT_ACTIVITY));
+    renderActivity();
+  });
 }
 
 // 渲染活動面板（左側）
