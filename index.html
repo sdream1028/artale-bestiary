@@ -194,6 +194,18 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
 .score-editor{display:flex;gap:6px;align-items:center;padding:5px 7px;border:1px solid rgba(139,100,40,.15);border-radius:4px;background:rgba(139,100,40,.05);margin-bottom:4px}
 .se-label{font-family:'Cinzel',serif;font-size:9px;color:#5c3a18;flex:1}
 .se-input{width:60px;padding:3px 6px;border:1px solid rgba(139,100,40,.3);border-radius:3px;font-family:'Cinzel',serif;font-size:10px;text-align:center;background:#fff;color:#3b2610}
+
+/* ── MY SCORE PANEL ── */
+.score-summary{padding:4px 0}
+.score-total{font-family:'Cinzel',serif;font-size:20px;font-weight:700;background:linear-gradient(135deg,#c8922a,#f5d87a,#c8922a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;padding:8px 0}
+.score-total-label{font-family:'Cinzel',serif;font-size:9px;color:#8b7040;text-align:center;margin-bottom:8px}
+.score-detail-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(139,100,40,.12)}
+.score-detail-label{font-family:'Cinzel',serif;font-size:9px;color:#5c3a18}
+.score-detail-pts{font-family:'Cinzel',serif;font-size:10px;font-weight:700;color:#c8922a}
+/* admin score */
+.admin-slot-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(139,100,40,.1)}
+.admin-slot-label{font-family:'Cinzel',serif;font-size:9px;color:#5c3a18;flex:1}
+.admin-slot-input{width:55px;padding:3px 6px;border:1px solid rgba(139,100,40,.3);border-radius:3px;font-family:'Cinzel',serif;font-size:10px;text-align:center;background:#fff;color:#3b2610}
 </style>
 </head>
 <body>
@@ -229,6 +241,17 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
     </div>
     <div class="pb" id="activityPanel">
       <div class="rempty" style="padding:20px 0">載入中...</div>
+    </div>
+  </div>
+
+  <!-- 個人計分區塊 -->
+  <div class="side hidden" id="myScorePanel" style="margin-top:8px">
+    <div class="ph" style="display:flex;align-items:center;justify-content:space-between">
+      <div class="pt">🧮 我的分數</div>
+      <button class="edit-panel-btn" onclick="showModal('adminScoreModal')" id="adminScoreBtn" title="管理員設定">⚙️</button>
+    </div>
+    <div class="pb" id="myScoreContent">
+      <div class="rempty" style="padding:12px 0">計算中...</div>
     </div>
   </div>
 
@@ -438,6 +461,32 @@ body{font-family:'Noto Sans TC',sans-serif;background:#d4cfc6;display:flex;flex-
   </div>
 </div>
 
+
+<!-- MODAL: 管理員計分設定 -->
+<div class="overlay hidden" id="adminScoreModal">
+  <div class="modal modal-md">
+    <button class="modal-close" onclick="hideModal('adminScoreModal')">✕</button>
+    <div class="modal-title">⚙️ 管理員計分設定</div>
+    <div id="adminPwSection">
+      <div class="modal-sub">輸入管理員密碼解鎖</div>
+      <input type="password" id="adminScorePw" class="fi" placeholder="密碼" style="text-align:center;letter-spacing:4px"/>
+      <div class="errmsg hidden" id="adminScorePwErr" style="margin-top:6px;text-align:center"></div>
+      <div class="form-actions">
+        <button class="btn btn-ghost" onclick="hideModal('adminScoreModal')">取消</button>
+        <button class="btn btn-gold" onclick="unlockAdminScore()">解鎖</button>
+      </div>
+    </div>
+    <div id="adminScoreContent" class="hidden">
+      <div class="modal-sub" style="margin-bottom:8px">為特定格子設定自訂分數（留空則用一般計分規則）</div>
+      <div id="adminScoreList" style="max-height:400px;overflow-y:auto"></div>
+      <div class="form-actions" style="margin-top:12px">
+        <button class="btn btn-ghost" onclick="hideModal('adminScoreModal')">取消</button>
+        <button class="btn btn-gold" onclick="saveAdminScores()">💾 儲存設定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: AUTH -->
 <div class="overlay hidden" id="authModal">
   <div class="modal modal-sm">
@@ -502,7 +551,7 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
 const CATS = ["🌲 森林怪物","🏜️ 沙漠怪物","🌊 海洋怪物","⛏️ 地下怪物","❄️ 冰雪怪物","🔥 火焰怪物","✨ 神秘怪物","☁️ 天空怪物","👑 魔王"];
-const TAB_PAGES = [[25],[25,25],[25,25,25,11],[25,25,6],[25,15],[25,1],[18],[5],[25,22]];
+const TAB_PAGES = [[25],[25,25],[25,25,25,25],[25,25,6],[25,15],[25,1],[18],[5],[25,22]];
 const MAX_B64 = 700*1024;
 const $ = id => document.getElementById(id);
 const LEAF = document.getElementById('leafTpl').content;
@@ -788,6 +837,7 @@ function onLoggedIn(user){
   loadPlayers();
   subscribeLit();
   renderActivity();
+  renderMyScore();
 }
 
 /* ── LOGIN ── */
@@ -825,7 +875,7 @@ window.doRegister = async () => {
 };
 
 /* ── LOGOUT ── */
-$('logoutBtn').onclick=()=>{ S.user=null; clearSession(); S.litSlots=new Set(); if(S.litUnsub){S.litUnsub();S.litUnsub=null;} $('loginBtn').classList.remove('hidden'); $('userInfo').classList.add('hidden'); toast('已登出'); renderGrid(); renderActivity(); };
+$('logoutBtn').onclick=()=>{ S.user=null; clearSession(); S.litSlots=new Set(); if(S.litUnsub){S.litUnsub();S.litUnsub=null;} $('loginBtn').classList.remove('hidden'); $('userInfo').classList.add('hidden'); toast('已登出'); renderGrid(); renderActivity(); renderMyScore(); };
 $('loginBtn').onclick=()=>showModal('authModal');
 (()=>{ const s=loadSession(); if(s){ onLoggedIn(s); subscribeLit(); } })();
 
@@ -1344,6 +1394,7 @@ function subscribeLit(){
       }
     });
     renderGrid();
+    renderMyScore();
   });
 }
 
@@ -1534,8 +1585,196 @@ document.getElementById('rankPw').addEventListener('keydown', e=>{
   if(e.key==='Enter') doUnlockRank();
 });
 
+
+/* ── PERSONAL SCORE SYSTEM ── */
+// customScores: { "slotKey": pts } 管理員自訂分數，存在 Firebase settings/customScores
+let customScores = {};
+let adminScoreUnlocked = false;
+
+// 計算一般卡分數
+function calcCardScore(cardCount){
+  if(cardCount >= 5) return 10;
+  if(cardCount >= 3) return 5;
+  if(cardCount >= 1) return 2;
+  return 0;
+}
+
+// 計算個人總分
+function calcMyScore(){
+  if(!S.user) return { total:0, details:[] };
+  let total = 0;
+  const details = [];
+  S.litSlots.forEach(slotKey=>{
+    const [tab, pg, idx] = slotKey.split('-').map(Number);
+    const cardCount = (S.cardCounts && S.cardCounts[slotKey]) || 1;
+    let pts = 0;
+    let label = '';
+    const catIdx = tab; // tab 是 0-based curTab
+
+    if(customScores[slotKey] !== undefined){
+      // 管理員自訂分數
+      pts = customScores[slotKey];
+      label = '自訂';
+    } else if(catIdx === 8){
+      // 第9頁籤（魔王，curTab=8）→ 不計一般卡分
+      pts = 0;
+      label = '魔王（需自訂）';
+    } else {
+      pts = calcCardScore(cardCount);
+      label = cardCount + '張卡';
+    }
+
+    if(pts > 0){
+      total += pts;
+      details.push({ slotKey, tab, pg, idx, pts, cardCount, label });
+    }
+  });
+  return { total, details };
+}
+
+// 渲染個人計分
+function renderMyScore(){
+  if(!S.user){
+    document.getElementById('myScorePanel').classList.add('hidden');
+    return;
+  }
+  document.getElementById('myScorePanel').classList.remove('hidden');
+  const { total, details } = calcMyScore();
+  const content = document.getElementById('myScoreContent');
+  let html = '<div class="score-summary">';
+  html += '<div class="score-total">' + total + ' 分</div>';
+  html += '<div class="score-total-label">我的目前積分（' + S.litSlots.size + ' 格點亮）</div>';
+  if(details.length > 0){
+    html += '<div style="margin-top:6px">';
+    // 顯示自訂分數的格子
+    const custom = details.filter(d=>customScores[d.slotKey]!==undefined);
+    if(custom.length){
+      html += '<div class="score-detail-row" style="border-bottom:1.5px solid rgba(139,100,40,.25);margin-bottom:3px"><span class="score-detail-label" style="font-weight:700">特殊格子</span></div>';
+      custom.forEach(d=>{
+        html += '<div class="score-detail-row"><span class="score-detail-label">格子 #'+(d.idx+1)+'（頁'+(d.pg+1)+'）</span><span class="score-detail-pts">+'+d.pts+'分</span></div>';
+      });
+    }
+    // 顯示一般卡統計
+    const normal = details.filter(d=>customScores[d.slotKey]===undefined && d.pts > 0);
+    if(normal.length){
+      const gold = normal.filter(d=>d.cardCount>=5).length;
+      const silver = normal.filter(d=>d.cardCount>=3&&d.cardCount<5).length;
+      const bronze = normal.filter(d=>d.cardCount<3).length;
+      if(gold) html += '<div class="score-detail-row"><span class="score-detail-label">🥇 金牌 x'+gold+'</span><span class="score-detail-pts">+'+(gold*10)+'分</span></div>';
+      if(silver) html += '<div class="score-detail-row"><span class="score-detail-label">🥈 銀牌 x'+silver+'</span><span class="score-detail-pts">+'+(silver*5)+'分</span></div>';
+      if(bronze) html += '<div class="score-detail-row"><span class="score-detail-label">🥉 銅牌 x'+bronze+'</span><span class="score-detail-pts">+'+(bronze*2)+'分</span></div>';
+    }
+    html += '</div>';
+  } else {
+    html += '<div class="rempty" style="padding:8px 0;font-size:9px">點亮怪物開始計分！</div>';
+  }
+  html += '</div>';
+  content.innerHTML = html;
+}
+
+// 載入自訂分數（即時監聽）
+function loadCustomScores(){
+  onSnapshot(doc(db,'settings','customScores'), snap=>{
+    customScores = snap.exists() ? snap.data() : {};
+    renderMyScore();
+  }, ()=>{ customScores = {}; renderMyScore(); });
+}
+
+// 管理員解鎖
+window.unlockAdminScore = function(){
+  const pw = document.getElementById('adminScorePw').value;
+  const err = document.getElementById('adminScorePwErr');
+  if(pw !== 'handbook'){
+    err.textContent = '密碼錯誤';
+    err.classList.remove('hidden');
+    return;
+  }
+  adminScoreUnlocked = true;
+  err.classList.add('hidden');
+  document.getElementById('adminPwSection').classList.add('hidden');
+  document.getElementById('adminScoreContent').classList.remove('hidden');
+  buildAdminScoreList();
+};
+
+document.getElementById('adminScorePw').addEventListener('keydown', e=>{
+  if(e.key==='Enter') unlockAdminScore();
+});
+
+// 關閉 modal 時重設密碼區
+const origHideModal = window.hideModal;
+window.hideModal = function(id){
+  origHideModal(id);
+  if(id === 'adminScoreModal'){
+    adminScoreUnlocked = false;
+    document.getElementById('adminPwSection').classList.remove('hidden');
+    document.getElementById('adminScoreContent').classList.add('hidden');
+    document.getElementById('adminScorePw').value = '';
+    document.getElementById('adminScorePwErr').classList.add('hidden');
+  }
+};
+
+// 建立管理員設定列表（顯示所有已點亮的格子）
+function buildAdminScoreList(){
+  const list = document.getElementById('adminScoreList');
+  list.innerHTML = '';
+  if(S.litSlots.size === 0){
+    list.innerHTML = '<div class="rempty">尚無點亮格子</div>';
+    return;
+  }
+  // 標題
+  const hdr = document.createElement('div');
+  hdr.style.cssText = 'font-family:Cinzel,serif;font-size:9px;color:#8b6030;margin-bottom:8px;letter-spacing:.3px';
+  hdr.textContent = '已點亮格子（留空 = 一般計分規則）';
+  list.appendChild(hdr);
+
+  const CATS_LOCAL = ["🌲森林","🏜️沙漠","🌊海洋","⛏️地下","❄️冰雪","🔥火焰","✨神秘","☁️天空","👑魔王"];
+  const sorted = Array.from(S.litSlots).sort((a,b)=>{
+    const [ta,pa,ia] = a.split('-').map(Number);
+    const [tb,pb,ib] = b.split('-').map(Number);
+    return ta-tb || pa-pb || ia-ib;
+  });
+
+  sorted.forEach(slotKey=>{
+    const [tab,pg,idx] = slotKey.split('-').map(Number);
+    const cardCount = (S.cardCounts&&S.cardCounts[slotKey])||1;
+    const row = document.createElement('div');
+    row.className = 'admin-slot-row';
+    const normalPts = tab===8 ? 0 : calcCardScore(cardCount);
+    const currentCustom = customScores[slotKey];
+    row.innerHTML = `
+      <div class="admin-slot-label">
+        ${CATS_LOCAL[tab]} P${pg+1} #${idx+1}<br>
+        <span style="color:#a08050;font-size:8px">${cardCount}張卡，一般=${normalPts}分</span>
+      </div>
+      <input class="admin-slot-input" type="number" data-slot="${slotKey}"
+        value="${currentCustom!==undefined?currentCustom:''}"
+        placeholder="${normalPts}" min="0" max="999"/>
+      <span style="font-family:Cinzel,serif;font-size:9px;color:#8b6030">分</span>
+    `;
+    list.appendChild(row);
+  });
+}
+
+// 儲存管理員自訂分數
+window.saveAdminScores = async function(){
+  const inputs = document.querySelectorAll('.admin-slot-input');
+  const newScores = {};
+  inputs.forEach(inp=>{
+    const slotKey = inp.dataset.slot;
+    const val = inp.value.trim();
+    if(val !== '') newScores[slotKey] = parseInt(val)||0;
+  });
+  try{
+    await setDoc(doc(db,'settings','customScores'), newScores);
+    customScores = newScores;
+    hideModal('adminScoreModal');
+    toast('✅ 自訂分數已儲存','ok');
+    renderMyScore();
+  }catch(e){ toast('儲存失敗：'+e.message,'err'); }
+};
+
 /* ── INIT ── */
-renderGrid(); loadPlayers(); subscribe(); subscribeMonsters(); loadActivity();
+renderGrid(); loadPlayers(); subscribe(); subscribeMonsters(); loadActivity(); loadCustomScores();
 </script>
 </body>
 </html>
